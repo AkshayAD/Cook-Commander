@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { UserPreferences, PreferenceProfile, MealHistoryEntry } from '../types';
 import { parsePreferencesFromText, optimizePreferencesFromHistory, getLearningSuggestions, LearningSuggestions } from '../services/geminiService';
 import { useSettings } from '../contexts/SettingsContext';
@@ -27,6 +27,14 @@ const PreferencesModal: React.FC<Props> = ({ profiles, currentProfileId, history
     const [activeTab, setActiveTab] = useState<'general' | 'breakfast' | 'lunch' | 'dinner'>('general');
     const [learningSuggestions, setLearningSuggestions] = useState<LearningSuggestions | null>(null);
     const [showLearningModal, setShowLearningModal] = useState(false);
+
+    // Lock body scroll when modal is open
+    useEffect(() => {
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, []);
 
     // When switching profiles via internal dropdown
     const handleProfileSelect = (id: string) => {
@@ -239,7 +247,7 @@ const PreferencesModal: React.FC<Props> = ({ profiles, currentProfileId, history
                             />
                             <p className="text-sm text-gray-400">Manage detailed dietary preferences for the AI.</p>
                         </div>
-                        <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                        <button onClick={onClose} className="p-3 hover:bg-gray-100 rounded-full transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center">
                             <X className="w-6 h-6 text-gray-500" />
                         </button>
                     </div>
@@ -251,9 +259,9 @@ const PreferencesModal: React.FC<Props> = ({ profiles, currentProfileId, history
                                 <Wand2 className="w-5 h-5" />
                                 <h3 className="text-sm font-bold">Quick Import / Fill</h3>
                             </div>
-                            <div className="flex gap-2 items-start">
+                            <div className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-start">
                                 <textarea
-                                    className="flex-1 px-3 py-2 bg-white border border-blue-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none text-gray-900 resize-none"
+                                    className="flex-1 px-3 py-2 bg-white border border-blue-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none text-gray-900 resize-none min-h-[80px]"
                                     placeholder="Paste specific meal ideas, dietary needs, or notes here..."
                                     rows={3}
                                     value={rawText}
@@ -262,8 +270,7 @@ const PreferencesModal: React.FC<Props> = ({ profiles, currentProfileId, history
                                 <button
                                     onClick={handleAnalyze}
                                     disabled={isAnalyzing || !rawText}
-                                    className="px-4 py-2 h-auto bg-blue-600 text-white text-sm rounded-lg font-bold hover:bg-blue-700 disabled:opacity-50 transition-colors whitespace-nowrap flex items-center"
-                                    style={{ minHeight: '86px' }}
+                                    className="w-full sm:w-auto px-4 py-3 sm:py-2 bg-blue-600 text-white text-sm rounded-lg font-bold hover:bg-blue-700 disabled:opacity-50 transition-colors whitespace-nowrap flex items-center justify-center min-h-[44px] sm:min-h-[86px]"
                                 >
                                     {isAnalyzing ? 'Extracting...' : 'Extract'}
                                 </button>
@@ -283,7 +290,7 @@ const PreferencesModal: React.FC<Props> = ({ profiles, currentProfileId, history
                     </div>
 
                     {/* Tab Content */}
-                    <div className="p-6 overflow-y-auto flex-1 bg-white">
+                    <div className="p-6 overflow-y-auto flex-1 bg-white overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
                         <div className="max-w-3xl">
                             {activeTab === 'general' && (
                                 <div className="space-y-6 animate-in fade-in duration-200">

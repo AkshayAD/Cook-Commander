@@ -28,22 +28,30 @@ export default function SettingsModal({ onClose, canClose }: SettingsModalProps)
         if (canClose) onClose();
     };
 
+    // Lock body scroll when modal is open
+    useEffect(() => {
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, []);
+
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-2 sm:p-4" style={{ minHeight: '100dvh' }}>
             <div className="bg-white rounded-2xl w-full max-w-md shadow-xl overflow-hidden max-h-[95vh] sm:max-h-[90vh] flex flex-col">
-                <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                <div className="p-4 sm:p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50 shrink-0">
                     <h3 className="font-bold text-gray-800 flex items-center gap-2">
                         <Key className="w-5 h-5 text-purple-600" />
                         Settings
                     </h3>
                     {canClose && (
-                        <button onClick={onClose} className="p-1 hover:bg-gray-200 rounded-full transition-colors">
+                        <button onClick={onClose} className="p-2 hover:bg-gray-200 rounded-full transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center">
                             <X className="w-5 h-5 text-gray-500" />
                         </button>
                     )}
                 </div>
 
-                <div className="p-6 space-y-6">
+                <div className="p-4 sm:p-6 space-y-6 flex-1 overflow-y-auto overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
                     {!canClose && (
                         <div className="bg-amber-50 text-amber-800 p-3 rounded-lg text-sm border border-amber-200">
                             Please configure your Gemini API Key to continue using Cook Commander.
@@ -112,11 +120,11 @@ export default function SettingsModal({ onClose, canClose }: SettingsModalProps)
                     </div>
                 </div>
 
-                <div className="p-4 border-t border-gray-100 flex justify-end safe-area-inset-bottom shrink-0">
+                <div className="p-4 border-t border-gray-100 safe-area-inset-bottom shrink-0">
                     <button
                         onClick={handleSave}
                         disabled={!localKey}
-                        className="flex items-center gap-2 px-6 py-2 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
+                        className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm min-h-[44px]"
                     >
                         <Save className="w-4 h-4" />
                         Save Settings

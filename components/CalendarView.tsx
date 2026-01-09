@@ -206,25 +206,25 @@ const CalendarView: React.FC<Props> = ({ schedule, onInitiateTransfer, onGenerat
                     <div className="flex items-center gap-2">
                         <button
                             onClick={() => setIsMultiSelectMode(!isMultiSelectMode)}
-                            className={`px-3 py-1.5 text-xs rounded-full font-medium transition-colors flex items-center gap-1 ${isMultiSelectMode
+                            className={`px-3 py-2 text-xs sm:text-sm rounded-full font-medium transition-colors flex items-center gap-1 min-h-[44px] ${isMultiSelectMode
                                 ? 'bg-green-600 text-white'
                                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                                 }`}
                         >
-                            <CheckSquare className="w-3 h-3" />
+                            <CheckSquare className="w-4 h-4" />
                             {isMultiSelectMode ? 'Multi-Select ON' : 'Multi-Select'}
                         </button>
                         <span className="hidden sm:inline text-gray-400">or Ctrl/Cmd + Click</span>
                     </div>
                     <button
                         onClick={selectThisWeek}
-                        className="px-3 py-1.5 text-xs bg-indigo-100 text-indigo-700 rounded-full hover:bg-indigo-200 transition-colors font-medium"
+                        className="px-3 py-2 text-xs sm:text-sm bg-indigo-100 text-indigo-700 rounded-full hover:bg-indigo-200 transition-colors font-medium min-h-[44px]"
                     >
                         Select This Week
                     </button>
                 </div>
 
-                <div className="grid grid-cols-7 text-center py-2 bg-gray-50 border-b text-xs font-semibold text-gray-400">
+                <div className="grid grid-cols-7 text-center py-2 bg-gray-50 border-b text-xs sm:text-sm font-semibold text-gray-500">
                     {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((d, i) => <div key={i}>{d}</div>)}
                 </div>
 

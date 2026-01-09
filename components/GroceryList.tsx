@@ -171,14 +171,14 @@ const GroceryList: React.FC<Props> = ({
             Generate Grocery List from Schedule
           </h3>
 
-          <div className="flex flex-wrap gap-3 items-end">
+          <div className="flex flex-col sm:flex-row flex-wrap gap-3 items-stretch sm:items-end">
             <div className="flex-1 min-w-[140px]">
               <label className="block text-xs text-gray-500 mb-1">Start Date</label>
               <input
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                className="w-full px-3 py-2 min-h-[44px] border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
               />
             </div>
             <div className="flex-1 min-w-[140px]">
@@ -187,13 +187,13 @@ const GroceryList: React.FC<Props> = ({
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                className="w-full px-3 py-2 min-h-[44px] border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
               />
             </div>
             <button
               onClick={handleGenerateFromDates}
               disabled={loading}
-              className="px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-colors shadow-sm"
+              className="w-full sm:w-auto px-4 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-colors shadow-sm min-h-[44px]"
             >
               {loading ? (
                 <>
@@ -210,22 +210,22 @@ const GroceryList: React.FC<Props> = ({
           </div>
 
           {/* Quick Presets */}
-          <div className="flex gap-2 mt-3">
+          <div className="flex flex-wrap gap-2 mt-3">
             <button
               onClick={setThisWeek}
-              className="px-3 py-1 text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full transition-colors"
+              className="px-3 py-2 text-xs sm:text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full transition-colors min-h-[36px]"
             >
               This Week
             </button>
             <button
               onClick={setNextWeek}
-              className="px-3 py-1 text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full transition-colors"
+              className="px-3 py-2 text-xs sm:text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full transition-colors min-h-[36px]"
             >
               Next Week
             </button>
             <button
               onClick={setNext7Days}
-              className="px-3 py-1 text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full transition-colors"
+              className="px-3 py-2 text-xs sm:text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full transition-colors min-h-[36px]"
             >
               Next 7 Days
             </button>

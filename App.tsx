@@ -489,14 +489,14 @@ function App() {
           </div>
 
           {/* Right: Actions */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             {/* Profile Selector (Meal Preferences) */}
             <div className="relative group">
               <button
                 onClick={() => setIsPreferencesOpen(true)}
-                className="flex items-center gap-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium text-gray-700 transition-colors"
+                className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium text-gray-700 transition-colors min-h-[44px]"
               >
-                <span className="max-w-[100px] truncate">{activeProfileName}</span>
+                <span className="max-w-[60px] sm:max-w-[100px] truncate hidden xs:inline">{activeProfileName}</span>
                 <ChevronDown className="w-4 h-4" />
               </button>
             </div>
@@ -504,17 +504,17 @@ function App() {
             {/* AI Settings */}
             <button
               onClick={() => setIsSettingsOpen(true)}
-              className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg relative"
+              className="p-2.5 text-gray-600 hover:bg-gray-100 rounded-lg relative min-h-[44px] min-w-[44px] flex items-center justify-center"
               title="AI Settings"
             >
               <Cpu className="w-5 h-5" />
-              {!hasApiKey && <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>}
+              {!hasApiKey && <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>}
             </button>
 
             {/* Preferences */}
             <button
               onClick={() => setIsPreferencesOpen(true)}
-              className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+              className="p-2.5 text-gray-600 hover:bg-gray-100 rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center"
               title="Preferences"
             >
               <Settings className="w-5 h-5" />
