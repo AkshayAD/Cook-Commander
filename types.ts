@@ -50,3 +50,11 @@ export interface MealTransfer {
   sourceMealType: string;
   sourceMealName: string;
 }
+
+export interface SavedGroceryList {
+  id: string;
+  name: string;
+  items: GroceryItem[];
+  dateRange: string; // e.g., "Jan 6 - Jan 12, 2026"
+  createdAt: string; // ISO timestamp
+}
