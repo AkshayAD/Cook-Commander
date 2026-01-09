@@ -549,7 +549,7 @@ function App() {
         {[
           { id: 'plan', label: 'Plan', icon: ClipboardList },
           { id: 'calendar', label: 'Calendar', icon: CalendarIcon },
-          { id: 'grocery', label: 'Shop', icon: ShoppingCart }
+          { id: 'grocery', label: 'Grocery', icon: ShoppingCart }
         ].map(tab => (
           <button
             key={tab.id}
