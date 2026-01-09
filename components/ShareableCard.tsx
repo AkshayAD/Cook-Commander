@@ -7,58 +7,79 @@ interface ShareableCardProps {
     data: WeeklyPlan | GroceryItem[];
     dateRange: string;
     id?: string;
+    forCapture?: boolean; // Fixed size for image capture vs responsive for display
 }
 
-const ShareableCard: React.FC<ShareableCardProps> = ({ type, data, dateRange, id = 'share-card' }) => {
+const ShareableCard: React.FC<ShareableCardProps> = ({
+    type,
+    data,
+    dateRange,
+    id = 'share-card',
+    forCapture = false
+}) => {
+    // For capture: fixed width for consistent share images
+    // For display: responsive width that scales with container
+    const containerClasses = forCapture
+        ? "bg-white p-6 rounded-none w-[500px] text-gray-800 font-sans"
+        : "bg-white p-4 sm:p-6 rounded-none w-full max-w-[500px] text-gray-800 font-sans";
+
+    const headerTitleClasses = forCapture
+        ? "text-xl font-bold text-gray-900 leading-tight"
+        : "text-lg sm:text-xl font-bold text-gray-900 leading-tight";
+
+    const dateRangeClasses = forCapture
+        ? "block text-lg font-bold text-gray-800"
+        : "block text-base sm:text-lg font-bold text-gray-800";
+
     return (
         <div
             id={id}
-            className="bg-white p-6 rounded-none w-[600px] text-gray-800 font-sans"
+            className={containerClasses}
             style={{
                 background: 'linear-gradient(to bottom, #ffffff 0%, #fff7ed 100%)',
             }}
         >
             {/* Header */}
-            <div className="flex items-center justify-between mb-6 border-b border-orange-200 pb-4">
-                <div className="flex items-center gap-3">
-                    <div className="bg-orange-500 p-2 rounded-lg text-white">
-                        <ChefHat size={24} />
+            <div className="flex items-center justify-between mb-4 sm:mb-6 border-b border-orange-200 pb-3 sm:pb-4">
+                <div className="flex items-center gap-2 sm:gap-3">
+                    <div className="bg-orange-500 p-1.5 sm:p-2 rounded-lg text-white">
+                        <ChefHat size={forCapture ? 24 : 20} className="sm:w-6 sm:h-6" />
                     </div>
                     <div>
-                        <h1 className="text-xl font-bold text-gray-900 leading-tight">Cook Commander</h1>
-                        <p className="text-xs text-orange-600 font-medium tracking-wide uppercase">
+                        <h1 className={headerTitleClasses}>Cook Commander</h1>
+                        <p className="text-[10px] sm:text-xs text-orange-600 font-medium tracking-wide uppercase">
                             {type === 'plan' ? 'Weekly Meal Plan' : 'Grocery Shopping List'}
                         </p>
                     </div>
                 </div>
                 <div className="text-right">
-                    <span className="block text-sm font-semibold text-gray-500">Dates</span>
-                    <span className="block text-lg font-bold text-gray-800">{dateRange}</span>
+                    <span className="block text-xs sm:text-sm font-semibold text-gray-500">Dates</span>
+                    <span className={dateRangeClasses}>{dateRange}</span>
                 </div>
             </div>
 
             {/* Content */}
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
                 {type === 'plan' ? (
                     // MEAL PLAN VIEW
-                    <div className="grid grid-cols-1 gap-3">
+                    <div className="grid grid-cols-1 gap-2 sm:gap-3">
                         {(data as WeeklyPlan).days.map((day, idx) => (
-                            <div key={idx} className="bg-white/80 border border-orange-100 rounded-lg p-3 shadow-sm">
-                                <h3 className="text-sm font-bold text-orange-800 mb-2 uppercase border-b border-orange-50 pb-1">
+                            <div key={idx} className="bg-white/80 border border-orange-100 rounded-lg p-2.5 sm:p-3 shadow-sm">
+                                <h3 className="text-xs sm:text-sm font-bold text-orange-800 mb-1.5 sm:mb-2 uppercase border-b border-orange-50 pb-1">
                                     {day.day}
                                 </h3>
-                                <div className="space-y-1.5">
+                                <div className="space-y-1 sm:space-y-1.5">
                                     <div className="flex items-baseline gap-2">
-                                        <span className="text-xs font-bold text-gray-400 w-16 uppercase">Breakfast</span>
-                                        <span className="text-sm text-gray-700 flex-1">{day.breakfast || '-'}</span>
+                                        <span className="text-[10px] sm:text-xs font-bold text-gray-400 w-14 sm:w-16 uppercase shrink-0">Breakfast</span>
+                                        <span className="text-xs sm:text-sm text-gray-700 flex-1 break-words">{day.breakfast || '-'}</span>
                                     </div>
                                     <div className="flex items-baseline gap-2">
-                                        <span className="text-xs font-bold text-gray-400 w-16 uppercase">Lunch</span>
-                                        <span className="text-sm text-gray-700 flex-1">{day.lunch || '-'}</span>
+                                        <span className="text-[10px] sm:text-xs font-bold text-gray-400 w-14 sm:w-16 uppercase shrink-0">Lunch</span>
+                                        <span className="text-xs sm:text-sm text-gray-700 flex-1 break-words">{day.lunch || '-'}</span>
                                     </div>
                                     <div className="flex items-baseline gap-2">
-                                        <span className="text-xs font-bold text-gray-400 w-16 uppercase">Dinner</span>
-                                        <span className="text-sm text-gray-700 flex-1">{day.dinner || '-'}</span>
+                                        <span className="text-[10px] sm:text-xs font-bold text-gray-400 w-14 sm:w-16 uppercase shrink-0">Dinner</span>
+                                        <span className="text-xs sm:text-sm text-gray-700 flex-1 break-words">{day.dinner || '-'}</span>
                                     </div>
                                 </div>
                             </div>
@@ -66,19 +87,19 @@ const ShareableCard: React.FC<ShareableCardProps> = ({ type, data, dateRange, id
                     </div>
                 ) : (
                     // GROCERY LIST VIEW
-                    <div className="columns-2 gap-4 space-y-4">
+                    <div className={forCapture ? "columns-2 gap-4 space-y-4" : "columns-1 sm:columns-2 gap-3 sm:gap-4 space-y-3 sm:space-y-4"}>
                         {Array.from(new Set((data as GroceryItem[]).map((i) => i.category))).map((cat) => (
-                            <div key={cat} className="break-inside-avoid bg-white/60 rounded-lg p-3 border border-orange-100">
-                                <h3 className="text-xs font-bold text-orange-800 uppercase mb-2 border-b border-orange-100 pb-1">
+                            <div key={cat} className="break-inside-avoid bg-white/60 rounded-lg p-2.5 sm:p-3 border border-orange-100">
+                                <h3 className="text-[10px] sm:text-xs font-bold text-orange-800 uppercase mb-1.5 sm:mb-2 border-b border-orange-100 pb-1">
                                     {cat || 'Other'}
                                 </h3>
-                                <ul className="space-y-1">
+                                <ul className="space-y-0.5 sm:space-y-1">
                                     {(data as GroceryItem[])
                                         .filter((i) => i.category === cat)
                                         .map((item, i) => (
-                                            <li key={i} className="text-sm text-gray-700 flex justify-between items-start gap-2">
-                                                <span>{item.item}</span>
-                                                <span className="text-gray-400 text-xs whitespace-nowrap">{item.quantity}</span>
+                                            <li key={i} className="text-xs sm:text-sm text-gray-700 flex justify-between items-start gap-2">
+                                                <span className="break-words flex-1">{item.item}</span>
+                                                <span className="text-gray-400 text-[10px] sm:text-xs whitespace-nowrap shrink-0">{item.quantity}</span>
                                             </li>
                                         ))}
                                 </ul>
@@ -89,7 +110,7 @@ const ShareableCard: React.FC<ShareableCardProps> = ({ type, data, dateRange, id
             </div>
 
             {/* Footer */}
-            <div className="mt-6 pt-4 border-t border-orange-100 flex justify-between items-center text-xs text-gray-400">
+            <div className="mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-orange-100 flex justify-between items-center text-[10px] sm:text-xs text-gray-400">
                 <span>Generated by AI</span>
                 <span>cookcommander.app</span>
             </div>

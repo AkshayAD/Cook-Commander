@@ -184,8 +184,8 @@ const PreferencesModal: React.FC<Props> = ({ profiles, currentProfileId, history
     );
 
     return (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl shadow-xl w-full max-w-5xl h-[85vh] overflow-hidden flex flex-col md:flex-row">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-2 sm:p-4" style={{ minHeight: '100dvh' }}>
+            <div className="bg-white rounded-2xl shadow-xl w-full max-w-5xl h-[95vh] sm:h-[85vh] overflow-hidden flex flex-col md:flex-row">
 
                 {/* Sidebar for Profiles */}
                 <div className="w-full md:w-64 bg-gray-50 border-r border-gray-200 p-4 flex-shrink-0 overflow-y-auto flex flex-col">
@@ -350,8 +350,8 @@ const PreferencesModal: React.FC<Props> = ({ profiles, currentProfileId, history
 
             {/* Learning Insights Modal */}
             {showLearningModal && learningSuggestions && (
-                <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[60] p-4">
-                    <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden">
+                <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[60] p-2 sm:p-4" style={{ minHeight: '100dvh' }}>
+                    <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden max-h-[95vh] sm:max-h-[90vh] flex flex-col">
                         <div className="p-5 border-b bg-gradient-to-r from-violet-500 to-fuchsia-600 text-white">
                             <h3 className="font-bold text-lg flex items-center gap-2">
                                 <History className="w-5 h-5" />

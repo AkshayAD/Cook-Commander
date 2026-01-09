@@ -29,8 +29,8 @@ export default function SettingsModal({ onClose, canClose }: SettingsModalProps)
     };
 
     return (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl w-full max-w-md shadow-xl overflow-hidden">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-2 sm:p-4" style={{ minHeight: '100dvh' }}>
+            <div className="bg-white rounded-2xl w-full max-w-md shadow-xl overflow-hidden max-h-[95vh] sm:max-h-[90vh] flex flex-col">
                 <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
                     <h3 className="font-bold text-gray-800 flex items-center gap-2">
                         <Key className="w-5 h-5 text-purple-600" />
@@ -112,7 +112,7 @@ export default function SettingsModal({ onClose, canClose }: SettingsModalProps)
                     </div>
                 </div>
 
-                <div className="p-4 border-t border-gray-100 flex justify-end">
+                <div className="p-4 border-t border-gray-100 flex justify-end safe-area-inset-bottom shrink-0">
                     <button
                         onClick={handleSave}
                         disabled={!localKey}

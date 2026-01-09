@@ -476,7 +476,7 @@ function App() {
   const activeProfileName = profiles.find(p => p.id === currentProfileId)?.name || 'Default';
 
   return (
-    <div className="min-h-screen pb-20 md:pb-0 bg-gray-50 flex flex-col">
+    <div className="min-h-dvh pb-20 md:pb-0 bg-gray-50 flex flex-col">
       {/* Header */}
       <header className="bg-white shadow-sm sticky top-0 z-30 shrink-0">
         <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
