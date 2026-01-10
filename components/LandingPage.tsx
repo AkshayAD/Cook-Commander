@@ -97,10 +97,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSkipAuth }) => {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-20">
                         <div className="flex items-center gap-2">
-                            <div className="bg-gradient-to-br from-orange-500 to-red-500 p-2 rounded-xl text-white shadow-lg shadow-orange-500/20">
-                                <ChefHat className="w-6 h-6" />
-                            </div>
-                            <span className="text-xl font-bold tracking-tight text-gray-900">QookCommander</span>
+                            <img src="/QookCommander-home-cook-management-app-logo.png" alt="QookCommander Logo" className="h-10 w-auto" />
                         </div>
 
                         {/* Desktop Menu */}
@@ -187,34 +184,118 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSkipAuth }) => {
                     </div>
                 </div>
 
-                {/* Screenshots Section */}
-                <div className="mt-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="relative rounded-2xl bg-gray-900 p-2 sm:p-4 shadow-2xl overflow-hidden ring-1 ring-white/10">
-                        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-orange-500/20 to-purple-500/20 opacity-50"></div>
-                        <div className="grid md:grid-cols-2 gap-4 relative z-10">
-                            <div className="rounded-xl overflow-hidden shadow-lg border border-gray-800 bg-gray-900">
-                                <div className="bg-gray-800 px-4 py-2 flex items-center gap-2 border-b border-gray-700">
-                                    <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                                    <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                                    <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                                    <span className="text-xs text-gray-400 font-mono ml-2">weekly_plan.qook</span>
+                {/* How It Works - Visual Flow Section */}
+                <div className="mt-32 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="relative">
+                        <div className="text-center mb-16">
+                            <span className="text-orange-600 font-bold tracking-wide uppercase text-sm">See It In Action</span>
+                            <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mt-2 mb-4">From Preference to Plate</h2>
+                            <p className="text-gray-600 text-lg max-w-2xl mx-auto">Experience the seamless flow of QookCommander. Set your tastes, get your plan, and shop with ease.</p>
+                        </div>
+
+                        {/* Step 1: Preferences */}
+                        <div className="relative mb-24 last:mb-0 group">
+                            <div className="bg-gray-50 rounded-3xl p-8 md:p-12 border border-gray-100 overflow-hidden relative">
+                                <div className="grid md:grid-cols-2 gap-12 items-center">
+                                    <div>
+                                        <div className="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center mb-6 text-2xl font-bold text-orange-600">1</div>
+                                        <h3 className="text-3xl font-bold text-gray-900 mb-4">Tell Us What You Love</h3>
+                                        <p className="text-gray-600 text-lg leading-relaxed">
+                                            Vegetarian? Keto? Love spicy food? Just set your preferences once.
+                                            QookCommander supports diverse dietary needs including detailed regional Indian cuisine preferences.
+                                        </p>
+                                    </div>
+                                    <div className="relative perspective-1000">
+                                        <div className="relative z-10 rounded-xl overflow-hidden shadow-2xl border-4 border-white transform transition-transform group-hover:scale-[1.02] duration-500">
+                                            <img src="/preferences_setup.png" alt="Preferences Setup" className="w-full h-auto" />
+                                        </div>
+                                        {/* Decorative elements */}
+                                        <div className="absolute -inset-4 bg-orange-100 rounded-full blur-2xl opacity-40 -z-10"></div>
+                                    </div>
                                 </div>
-                                <img src="/screenshot-planner.png" alt="Qook Meal Planner" className="w-full h-auto opacity-90 hover:opacity-100 transition-opacity" />
-                            </div>
-                            <div className="rounded-xl overflow-hidden shadow-lg border border-gray-800 bg-gray-900">
-                                <div className="bg-gray-800 px-4 py-2 flex items-center gap-2 border-b border-gray-700">
-                                    <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                                    <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                                    <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                                    <span className="text-xs text-gray-400 font-mono ml-2">grocery_list.qook</span>
-                                </div>
-                                <img src="/screenshot-grocery.png" alt="Smart Grocery List" className="w-full h-auto opacity-90 hover:opacity-100 transition-opacity" />
                             </div>
                         </div>
-                        {/* Share Preview Overlay */}
-                        <div className="hidden lg:block absolute bottom-4 -right-12 w-1/3 rounded-xl overflow-hidden shadow-2xl border border-gray-700 bg-gray-900 transform rotate-[-5deg] hover:rotate-0 transition-transform duration-500">
-                            <img src="/share-preview.png" alt="Share Meal Plan" className="w-full h-auto opacity-95" />
+
+                        {/* Step 2: The Generated Plan (Primary) */}
+                        <div className="relative mb-24 last:mb-0">
+                            <div className="bg-gray-900 rounded-3xl p-8 md:p-12 text-white overflow-hidden relative shadow-2xl">
+                                <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-br from-orange-600/30 to-purple-600/30 rounded-full blur-3xl opacity-40 -translate-y-1/2 translate-x-1/2"></div>
+
+                                <div className="text-center max-w-3xl mx-auto mb-16 relative z-10">
+                                    <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center mx-auto mb-6 text-2xl font-bold text-white">2</div>
+                                    <h3 className="text-3xl md:text-4xl font-bold mb-4">Your Perfect Weekly Plan</h3>
+                                    <p className="text-gray-300 text-lg">AI-crafted menus that optimize ingredients and minimize waste. Available in English and Hindi.</p>
+                                </div>
+
+                                <div className="relative h-[400px] md:h-[600px] w-full flex justify-center items-start perspective-1000">
+                                    {/* English Plan (Left/Back) */}
+                                    <div className="absolute w-[80%] md:w-[60%] left-0 md:left-10 top-10 transform -rotate-6 opacity-70 scale-95 origin-bottom-right transition-all duration-700 hover:opacity-100 hover:z-20 hover:scale-100 hover:rotate-0">
+                                        <div className="rounded-xl overflow-hidden shadow-2xl border border-gray-700 bg-gray-800">
+                                            <div className="bg-gray-900/50 px-4 py-2 flex justify-between items-center text-xs text-gray-400 border-b border-gray-700">
+                                                <span>Hindi Plan</span>
+                                            </div>
+                                            <img src="/generated_menu_card_en.png" alt="Hindi Meal Plan" className="w-full h-auto blur-[1px] hover:blur-none transition-all" />
+                                        </div>
+                                    </div>
+
+                                    {/* English Plan (Main/Front) */}
+                                    <div className="absolute w-[90%] md:w-[65%] z-10 transform translate-y-0 shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-all duration-500 hover:-translate-y-2">
+                                        <div className="rounded-xl overflow-hidden shadow-2xl border border-gray-700 bg-gray-900">
+                                            <div className="bg-gray-800 px-4 py-2 flex items-center gap-2 border-b border-gray-700">
+                                                <div className="flex gap-1.5">
+                                                    <div className="w-2.5 h-2.5 rounded-full bg-red-500" />
+                                                    <div className="w-2.5 h-2.5 rounded-full bg-yellow-500" />
+                                                    <div className="w-2.5 h-2.5 rounded-full bg-green-500" />
+                                                </div>
+                                                <span className="text-xs text-gray-400 font-mono ml-4">weekly_plan_final.qook</span>
+                                            </div>
+                                            <img src="/generated_menu_card_en.png" alt="English Meal Plan" className="w-full h-auto" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+
+                        {/* Step 3: Mobile & Grocery & Share */}
+                        <div className="grid md:grid-cols-2 gap-8 mb-24">
+                            {/* Grocery & Share */}
+                            <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-lg hover:shadow-xl transition-shadow flex flex-col">
+                                <div className="mb-8">
+                                    <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-6 text-2xl font-bold text-green-600">3</div>
+                                    <h3 className="text-2xl font-bold text-gray-900 mb-3">Shop & Share in Seconds</h3>
+                                    <p className="text-gray-600">
+                                        Get an organized shopping list instantly. Share it with family or your cook with a single click.
+                                    </p>
+                                </div>
+                                <div className="relative flex-grow flex items-end justify-center min-h-[300px] overflow-hidden rounded-2xl bg-gray-50 pt-8">
+                                    {/* Desktop List */}
+                                    <img src="/grocery_checklist.png" className="w-[80%] rounded-t-xl shadow-lg border border-gray-200 transform translate-y-2" alt="Grocery List" />
+                                    {/* Share Card Overlay */}
+                                    <div className="absolute bottom-8 right-4 w-1/2 transform rotate-6 shadow-2xl rounded-lg overflow-hidden border border-gray-200">
+                                        <img src="/share_preview_card.png" className="w-full" alt="Share Card" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Mobile View */}
+                            <div className="bg-gray-900 rounded-3xl p-8 text-white shadow-lg overflow-hidden relative flex flex-col">
+                                <div className="relative z-10 mb-8">
+                                    <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center mb-6 text-2xl font-bold text-white">4</div>
+                                    <h3 className="text-2xl font-bold mb-3">Perfect on Mobile</h3>
+                                    <p className="text-gray-400">
+                                        Access your plans and lists anywhere. The responsive design works perfectly on your phone.
+                                    </p>
+                                </div>
+                                <div className="flex-grow flex justify-center perspective-1000 relative z-10">
+                                    <div className="w-[280px] rounded-[2.5rem] bg-gray-800 border-8 border-gray-800 shadow-2xl overflow-hidden relative transform rotate-1 hover:rotate-0 transition-transform duration-500">
+                                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-gray-800 rounded-b-xl z-20"></div>
+                                        <img src="/mobile_dashboard.png" className="w-full h-full object-cover" alt="Mobile App" />
+                                    </div>
+                                </div>
+                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-blue-500/20 rounded-full blur-3xl -z-0"></div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </section>
@@ -264,9 +345,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSkipAuth }) => {
             {/* Footer */}
             <footer className="bg-gray-50 py-12 border-t border-gray-200">
                 <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6">
-                    <div className="flex items-center gap-2 opacity-70">
-                        <ChefHat className="w-5 h-5" />
-                        <span className="font-bold">QookCommander</span>
+                    <div className="flex items-center gap-2">
+                        <img src="/QookCommander-home-cook-management-app-logo.svg" alt="QookCommander Logo" className="w-10 h-10" />
+                        <span className="text-xl font-bold tracking-tight text-gray-900">QookCommander</span>
                     </div>
                     <p className="text-gray-500 text-sm">© {new Date().getFullYear()} QookCommander. All rights reserved.</p>
                 </div>
