@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChefHat, ArrowRight, CheckCircle2, Star, Sparkles, Loader2, AlertTriangle, Menu, X } from 'lucide-react';
+import { ChefHat, ArrowRight, CheckCircle2, Star, Sparkles, Loader2, AlertTriangle, Menu, X, Mail } from 'lucide-react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
 interface LandingPageProps {
