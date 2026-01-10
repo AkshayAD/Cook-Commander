@@ -13,7 +13,7 @@ import SmartEditModal from './components/SmartEditModal';
 import CalendarView from './components/CalendarView';
 import MoveMealModal from './components/MoveMealModal';
 import ArchiveModal from './components/ArchiveModal';
-import AuthPage from './components/AuthPage';
+import LandingPage from './components/LandingPage';
 import SettingsModal from './components/SettingsModal';
 import UserMenu from './components/UserMenu';
 import ShareModal from './components/ShareModal';
@@ -479,12 +479,12 @@ function App() {
 
   // Show auth page if not authenticated and Supabase is configured
   if (!isAuthenticated && isConfigured) {
-    return <AuthPage onSkipAuth={() => setSkipAuth(true)} />;
+    return <LandingPage onSkipAuth={() => setSkipAuth(true)} />;
   }
 
   // Show config message if Supabase not configured and not skipping
   if (!isAuthenticated && !isConfigured && !skipAuth) {
-    return <AuthPage onSkipAuth={() => setSkipAuth(true)} />;
+    return <LandingPage onSkipAuth={() => setSkipAuth(true)} />;
   }
 
   // Show loading while fetching data

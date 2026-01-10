@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="primaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF8C42;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F75C03;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <path fill="url(#primaryGradient)" d="M256,32C167.6,32,96,103.6,96,192c0,8.8,7.2,16,16,16h48c0-8.8-7.2-16-16-16c-35.3,0-64-28.7-64-64c0-8.8-7.2-16-16-16S48,119.2,48,128c0,53,43,96,96,96h8v160c0,17.7,14.3,32,32,32h144c17.7,0,32-14.3,32-32V224h8c53,0,96-43,96-96c0-8.8-7.2-16-16-16s-16,7.2-16,16c0,35.3-28.7,64-64,64c-8.8,0-16,7.2-16,16h48c8.8,0,16-7.2,16-16c0-88.4-71.6-160-160-160z M192,416h128v32c0,17.7-14.3,32-32,32H224c-17.7,0-32-14.3-32-32V416z"/>
+  <circle cx="256" cy="144" r="24" fill="white" opacity="0.3"/>
+</svg>

@@ -224,11 +224,65 @@ const CalendarView: React.FC<Props> = ({ schedule, onInitiateTransfer, onGenerat
                     </button>
                 </div>
 
-                <div className="grid grid-cols-7 text-center py-2 bg-gray-50 border-b text-xs sm:text-sm font-semibold text-gray-500">
+                {/* Mobile Horizontal Date Bar - Scrollable */}
+                <div className="sm:hidden overflow-x-auto border-b bg-white">
+                    <div className="flex gap-1 p-2 min-w-max">
+                        {days.map((day) => {
+                            const plan = getDayPlan(day);
+                            const dateKey = format(day, 'yyyy-MM-dd');
+                            const hasBreakfast = plan?.breakfast && plan.breakfast.trim() !== '';
+                            const hasLunch = plan?.lunch && plan.lunch.trim() !== '';
+                            const hasDinner = plan?.dinner && plan.dinner.trim() !== '';
+
+                            const isSingleSelected = selectedDate && isSameDay(day, selectedDate) && !isMultiSelectMode;
+                            const isMultiSelected = selectedDates.has(dateKey);
+                            const isCurrent = isToday(day);
+
+                            return (
+                                <button
+                                    key={dateKey}
+                                    onClick={(e) => handleDayClick(day, e)}
+                                    className={`flex flex-col items-center p-2 rounded-xl min-w-[52px] transition-all ${isSingleSelected || isMultiSelected
+                                        ? 'bg-indigo-600 text-white'
+                                        : isCurrent
+                                            ? 'bg-indigo-100 text-indigo-700'
+                                            : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
+                                        }`}
+                                >
+                                    <span className="text-[10px] font-medium opacity-60">
+                                        {format(day, 'EEE')}
+                                    </span>
+                                    <span className={`text-lg font-bold ${isSingleSelected || isMultiSelected ? 'text-white' : ''}`}>
+                                        {format(day, 'd')}
+                                    </span>
+                                    {/* Meal indicator dots */}
+                                    <div className="flex gap-0.5 mt-1">
+                                        <span className={`w-1.5 h-1.5 rounded-full ${hasBreakfast
+                                            ? isSingleSelected || isMultiSelected ? 'bg-white' : 'bg-amber-400'
+                                            : 'bg-gray-300'
+                                            }`} title="Breakfast" />
+                                        <span className={`w-1.5 h-1.5 rounded-full ${hasLunch
+                                            ? isSingleSelected || isMultiSelected ? 'bg-white' : 'bg-orange-400'
+                                            : 'bg-gray-300'
+                                            }`} title="Lunch" />
+                                        <span className={`w-1.5 h-1.5 rounded-full ${hasDinner
+                                            ? isSingleSelected || isMultiSelected ? 'bg-white' : 'bg-indigo-400'
+                                            : 'bg-gray-300'
+                                            }`} title="Dinner" />
+                                    </div>
+                                </button>
+                            );
+                        })}
+                    </div>
+                </div>
+
+                {/* Desktop Grid - Hidden on mobile */}
+                <div className="hidden sm:grid grid-cols-7 text-center py-2 bg-gray-50 border-b text-xs sm:text-sm font-semibold text-gray-500">
                     {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((d, i) => <div key={i}>{d}</div>)}
                 </div>
 
-                <div className="grid grid-cols-7 flex-1 auto-rows-fr">
+                {/* Desktop Calendar Grid - Hidden on mobile */}
+                <div className="hidden sm:grid grid-cols-7 flex-1 auto-rows-fr">
                     {/* Add empty cells for days before the first of month */}
                     {(() => {
                         const firstDay = startOfMonth(currentMonth);
