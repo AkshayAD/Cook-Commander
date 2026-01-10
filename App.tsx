@@ -68,7 +68,21 @@ function App() {
         // Load profiles
         const loadedProfiles = await supabaseService.getPreferenceProfiles(userId);
         if (loadedProfiles.length > 0) {
-          setProfiles(loadedProfiles);
+          // Migration: Add default profiles to existing users who only have 1 profile
+          if (loadedProfiles.length === 1) {
+            const defaultProfiles: PreferenceProfile[] = DEFAULT_PROFILE_TEMPLATES.map(template => ({
+              ...template,
+              id: crypto.randomUUID()
+            }));
+            const allProfiles = [...loadedProfiles, ...defaultProfiles];
+            setProfiles(allProfiles);
+            // Save new profiles to Supabase
+            for (const profile of defaultProfiles) {
+              await supabaseService.savePreferenceProfile(profile, userId);
+            }
+          } else {
+            setProfiles(loadedProfiles);
+          }
           // Load current profile ID from localStorage as it's session-specific
           const savedCurrentId = localStorage.getItem('cookcommander_current_profile_id');
           if (savedCurrentId && loadedProfiles.find(p => p.id === savedCurrentId)) {

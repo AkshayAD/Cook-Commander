@@ -43,14 +43,13 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
   ],
   specialInstructions: [
     "Cook visits twice a day: Morning (Breakfast+Lunch), Evening (Dinner).",
-    "Use Amul brand Paneer only.",
-    "Do not repeat meals quickly.",
-    "If Lunch is Chole/Rajma, Dinner should be lighter.",
-    "Grocery list must be precise."
+    "If Lunch is Chole/Rajma, Dinner should be lighter."
   ].join('\n'),
   pantryStaples: [
     "Salt", "Sugar", "Oil", "Spices (Haldi, Mirch, Jeera, etc.)", "Wheat Flour (Atta)", "Rice"
-  ]
+  ],
+  mealsToPrepare: ['breakfast', 'lunch', 'dinner'],
+  nonVegPreferences: []
 };
 
 // Default profile templates for new users

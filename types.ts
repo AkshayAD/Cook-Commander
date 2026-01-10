@@ -28,6 +28,8 @@ export interface UserPreferences {
   dinnerPreferences: string[];
   specialInstructions: string;
   pantryStaples: string[];
+  mealsToPrepare?: ('breakfast' | 'lunch' | 'dinner')[];
+  nonVegPreferences?: string[];
 }
 
 export interface PreferenceProfile extends UserPreferences {

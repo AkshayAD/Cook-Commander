@@ -394,15 +394,82 @@ const PreferencesModal: React.FC<Props> = ({ profiles, currentProfileId, history
                             <div className="max-w-3xl">
                                 {activeTab === 'general' && (
                                     <div className="space-y-6 animate-in fade-in duration-200">
+                                        {/* Meals to Prepare */}
                                         <div>
-                                            <label className="block text-sm font-bold text-gray-700 mb-2">Dietary Type</label>
-                                            <input
-                                                type="text"
-                                                value={localPrefs.dietaryType}
-                                                onChange={(e) => handleChange('dietaryType', e.target.value)}
-                                                className="w-full p-3 bg-gray-50 border-gray-200 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-black font-medium"
-                                            />
+                                            <label className="block text-sm font-bold text-gray-700 mb-3">Meals to Prepare</label>
+                                            <div className="flex flex-wrap gap-3">
+                                                {(['breakfast', 'lunch', 'dinner'] as const).map((meal) => (
+                                                    <label key={meal} className="flex items-center gap-2 px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-100 transition-colors">
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={localPrefs.mealsToPrepare?.includes(meal) ?? true}
+                                                            onChange={(e) => {
+                                                                const current = localPrefs.mealsToPrepare ?? ['breakfast', 'lunch', 'dinner'];
+                                                                if (e.target.checked) {
+                                                                    setLocalPrefs(prev => ({ ...prev, mealsToPrepare: [...current, meal] }));
+                                                                } else {
+                                                                    setLocalPrefs(prev => ({ ...prev, mealsToPrepare: current.filter(m => m !== meal) }));
+                                                                }
+                                                            }}
+                                                            className="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500"
+                                                        />
+                                                        <span className="text-sm font-medium capitalize text-gray-700">{meal}</span>
+                                                    </label>
+                                                ))}
+                                            </div>
                                         </div>
+
+                                        {/* Food Preference */}
+                                        <div>
+                                            <label className="block text-sm font-bold text-gray-700 mb-3">Food Preference</label>
+                                            <div className="flex flex-wrap gap-2">
+                                                {[
+                                                    { value: 'Vegetarian', label: 'Veg' },
+                                                    { value: 'Vegetarian (with Eggs)', label: 'Veg + Eggs' },
+                                                    { value: 'Non-Vegetarian', label: 'Non-Veg' }
+                                                ].map((opt) => (
+                                                    <button
+                                                        key={opt.value}
+                                                        type="button"
+                                                        onClick={() => handleChange('dietaryType', opt.value)}
+                                                        className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${localPrefs.dietaryType === opt.value
+                                                                ? 'bg-indigo-600 text-white'
+                                                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                                            }`}
+                                                    >
+                                                        {opt.label}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {/* Non-Veg Preferences (conditional) */}
+                                        {localPrefs.dietaryType === 'Non-Vegetarian' && (
+                                            <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl">
+                                                <label className="block text-sm font-bold text-amber-800 mb-3">What Non-Veg Options Work?</label>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {['Chicken', 'Mutton', 'Fish', 'Prawns', 'Crabs', 'Eggs'].map((item) => (
+                                                        <label key={item} className="flex items-center gap-2 px-3 py-2 bg-white border border-amber-200 rounded-lg cursor-pointer hover:bg-amber-100 transition-colors">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={localPrefs.nonVegPreferences?.includes(item) ?? false}
+                                                                onChange={(e) => {
+                                                                    const current = localPrefs.nonVegPreferences ?? [];
+                                                                    if (e.target.checked) {
+                                                                        setLocalPrefs(prev => ({ ...prev, nonVegPreferences: [...current, item] }));
+                                                                    } else {
+                                                                        setLocalPrefs(prev => ({ ...prev, nonVegPreferences: current.filter(i => i !== item) }));
+                                                                    }
+                                                                }}
+                                                                className="w-4 h-4 text-amber-600 rounded focus:ring-amber-500"
+                                                            />
+                                                            <span className="text-sm font-medium text-amber-900">{item}</span>
+                                                        </label>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+
                                         <div>
                                             <label className="block text-sm font-bold text-gray-700 mb-2">Dislikes / Restrictions</label>
                                             <textarea

@@ -100,7 +100,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSkipAuth }) => {
                             <div className="bg-gradient-to-br from-orange-500 to-red-500 p-2 rounded-xl text-white shadow-lg shadow-orange-500/20">
                                 <ChefHat className="w-6 h-6" />
                             </div>
-                            <span className="text-xl font-bold tracking-tight text-gray-900">CookCommander</span>
+                            <span className="text-xl font-bold tracking-tight text-gray-900">Qook</span>
                         </div>
 
                         {/* Desktop Menu */}
@@ -158,7 +158,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSkipAuth }) => {
                     </h1>
 
                     <p className="max-w-2xl mx-auto text-xl text-gray-600 mb-10 leading-relaxed">
-                        Stop worrying about "what's for dinner". CookCommander generates personalized weekly meal plans and organized grocery lists in seconds.
+                        Stop worrying about "what's for dinner". Qook generates personalized weekly meal plans and organized grocery lists in seconds.
                     </p>
 
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -178,7 +178,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSkipAuth }) => {
 
                     {/* Social Proof / Stats */}
                     <div className="mt-16 flex flex-wrap justify-center gap-8 md:gap-16 opacity-80">
-                        {['10k+ Meals Planned', 'Hours Saved Weekly', 'Zero Food Waste'].map((stat, i) => (
+                        {['100% Personalized', 'Saves 2+ Hours/Week', 'Zero Food Waste'].map((stat, i) => (
                             <div key={i} className="flex items-center gap-2">
                                 <CheckCircle2 className="w-5 h-5 text-green-500" />
                                 <span className="font-semibold text-gray-700">{stat}</span>
@@ -218,9 +218,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSkipAuth }) => {
             <section className="py-24 bg-white relative overflow-hidden">
                 <div className="max-w-5xl mx-auto px-4 relative z-10 bg-gray-900 rounded-3xl p-12 md:p-20 text-center shadow-2xl overflow-hidden">
                     <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-orange-500 rounded-full blur-[100px] opacity-20 translate-x-1/2 -translate-y-1/2"></div>
-
                     <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">Ready to take control?</h2>
-                    <p className="text-gray-400 text-lg mb-10 max-w-2xl mx-auto">Join thousands of home cooks who are saving time and eating better with CookCommander.</p>
+                    <p className="text-gray-400 text-lg mb-10 max-w-2xl mx-auto">Join thousands of home cooks who are saving time and eating better with Qook.</p>
 
                     <button
                         onClick={() => openAuth('signup')}
@@ -236,9 +235,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSkipAuth }) => {
                 <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6">
                     <div className="flex items-center gap-2 opacity-70">
                         <ChefHat className="w-5 h-5" />
-                        <span className="font-bold">CookCommander</span>
+                        <span className="font-bold">Qook</span>
                     </div>
-                    <p className="text-gray-500 text-sm">© {new Date().getFullYear()} CookCommander. All rights reserved.</p>
+                    <p className="text-gray-500 text-sm">© {new Date().getFullYear()} Qook. All rights reserved.</p>
                 </div>
             </footer>
 
