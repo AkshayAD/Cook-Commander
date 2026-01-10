@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { UserPreferences, PreferenceProfile, MealHistoryEntry } from '../types';
 import { parsePreferencesFromText, optimizePreferencesFromHistory, getLearningSuggestions, LearningSuggestions } from '../services/geminiService';
 import { useSettings } from '../contexts/SettingsContext';
-import { X, Wand2, Save, History, Plus, User, Coffee, Sun, Moon, AlertCircle, Check, ThumbsUp, ThumbsDown, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
+import { X, Wand2, Save, History, Plus, User, Coffee, Sun, Moon, AlertCircle, Check, ThumbsUp, ThumbsDown, Trash2, ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
 
 interface Props {
     profiles: PreferenceProfile[];
@@ -29,6 +29,8 @@ const PreferencesModal: React.FC<Props> = ({ profiles, currentProfileId, history
     const [learningSuggestions, setLearningSuggestions] = useState<LearningSuggestions | null>(null);
     const [showLearningModal, setShowLearningModal] = useState(false);
     const [mobileProfilesExpanded, setMobileProfilesExpanded] = useState(false);
+    const [showAiImportPopup, setShowAiImportPopup] = useState(false);
+    const [newMealItem, setNewMealItem] = useState('');
 
     // Lock body scroll when modal is open
     useEffect(() => {
@@ -228,12 +230,58 @@ const PreferencesModal: React.FC<Props> = ({ profiles, currentProfileId, history
                         >
                             <Plus className="w-4 h-4" />
                         </button>
+                        {/* AI Import Icon */}
+                        <button
+                            onClick={() => setShowAiImportPopup(!showAiImportPopup)}
+                            className="p-2 bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white rounded-lg hover:opacity-90"
+                            title="AI Import"
+                        >
+                            <Sparkles className="w-4 h-4" />
+                        </button>
                     </div>
-                    {/* Close Button */}
-                    <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg">
-                        <X className="w-5 h-5 text-gray-500" />
-                    </button>
+                    {/* Save/Cancel Icons on Mobile */}
+                    <div className="flex items-center gap-1">
+                        <button
+                            onClick={handleSave}
+                            className="p-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                            title="Save Profile"
+                        >
+                            <Check className="w-5 h-5" />
+                        </button>
+                        <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg" title="Cancel">
+                            <X className="w-5 h-5 text-gray-500" />
+                        </button>
+                    </div>
                 </div>
+
+                {/* Mobile AI Import Popup */}
+                {showAiImportPopup && (
+                    <div className="md:hidden shrink-0 border-b border-gray-200 bg-gradient-to-r from-violet-50 to-fuchsia-50 p-3">
+                        <div className="flex items-center gap-2 text-violet-800 mb-2">
+                            <Sparkles className="w-4 h-4" />
+                            <span className="text-sm font-bold">AI Quick Import</span>
+                            <button onClick={() => setShowAiImportPopup(false)} className="ml-auto p-1 hover:bg-violet-100 rounded">
+                                <X className="w-4 h-4" />
+                            </button>
+                        </div>
+                        <textarea
+                            className="w-full px-3 py-2 bg-white border border-violet-200 rounded-lg text-sm focus:ring-2 focus:ring-violet-500 outline-none text-gray-900 resize-none"
+                            placeholder="Paste meal ideas, dietary needs..."
+                            rows={2}
+                            value={rawText}
+                            onChange={(e) => setRawText(e.target.value)}
+                        />
+                        <div className="flex gap-2 mt-2">
+                            <button
+                                onClick={handleAnalyze}
+                                disabled={isAnalyzing || !rawText}
+                                className="flex-1 px-3 py-2 bg-violet-600 text-white text-xs rounded-lg font-bold hover:bg-violet-700 disabled:opacity-50 flex items-center justify-center gap-1"
+                            >
+                                {isAnalyzing ? 'Extracting...' : <><Wand2 className="w-3 h-3" /> Append to List</>}
+                            </button>
+                        </div>
+                    </div>
+                )}
 
                 {/* Desktop + Mobile Content Wrapper */}
                 <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
@@ -378,28 +426,93 @@ const PreferencesModal: React.FC<Props> = ({ profiles, currentProfileId, history
                                 )}
 
                                 {(activeTab === 'breakfast' || activeTab === 'lunch' || activeTab === 'dinner') && (
-                                    <div className="space-y-4 animate-in fade-in duration-200">
+                                    <div className="space-y-3 animate-in fade-in duration-200">
                                         <div className="flex items-center justify-between">
                                             <label className="block text-sm font-bold text-gray-700 capitalize">{activeTab} Preferences</label>
-                                            <span className="text-xs text-gray-400">One option per line or comma separated</span>
+                                            <span className="text-xs text-gray-400">{localPrefs[`${activeTab}Preferences`].length} items</span>
                                         </div>
-                                        <textarea
-                                            value={localPrefs[`${activeTab}Preferences`].join(', ')}
-                                            onChange={(e) => handleChange(`${activeTab}Preferences` as any, e.target.value)}
-                                            className="w-full p-4 bg-gray-50 border-gray-200 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-gray-900 leading-relaxed font-medium"
-                                            rows={12}
-                                            placeholder={`Enter your preferred ${activeTab} options here...`}
-                                        />
+
+                                        {/* Checkbox List */}
+                                        <div className="space-y-1 max-h-[45vh] overflow-y-auto border border-gray-200 rounded-xl p-2 bg-gray-50">
+                                            {localPrefs[`${activeTab}Preferences`].map((item, idx) => (
+                                                <div key={idx} className="flex items-center gap-2 p-2 bg-white rounded-lg border border-gray-100 hover:border-indigo-200 group">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={true}
+                                                        onChange={() => {
+                                                            const key = `${activeTab}Preferences` as keyof UserPreferences;
+                                                            const current = [...(localPrefs[key] as string[])];
+                                                            current.splice(idx, 1);
+                                                            setLocalPrefs(prev => ({ ...prev, [key]: current }));
+                                                        }}
+                                                        className="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500"
+                                                    />
+                                                    <span className="flex-1 text-sm text-gray-800">{item}</span>
+                                                    <button
+                                                        onClick={() => {
+                                                            const key = `${activeTab}Preferences` as keyof UserPreferences;
+                                                            const current = [...(localPrefs[key] as string[])];
+                                                            current.splice(idx, 1);
+                                                            setLocalPrefs(prev => ({ ...prev, [key]: current }));
+                                                        }}
+                                                        className="p-1 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity sm:opacity-100"
+                                                    >
+                                                        <Trash2 className="w-3 h-3" />
+                                                    </button>
+                                                </div>
+                                            ))}
+                                            {localPrefs[`${activeTab}Preferences`].length === 0 && (
+                                                <p className="text-center text-gray-400 text-sm py-4">No {activeTab} preferences yet. Add some below!</p>
+                                            )}
+                                        </div>
+
+                                        {/* Add New Item */}
+                                        <div className="flex gap-2">
+                                            <input
+                                                type="text"
+                                                value={newMealItem}
+                                                onChange={(e) => setNewMealItem(e.target.value)}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter' && newMealItem.trim()) {
+                                                        const key = `${activeTab}Preferences` as keyof UserPreferences;
+                                                        setLocalPrefs(prev => ({
+                                                            ...prev,
+                                                            [key]: [...(prev[key] as string[]), newMealItem.trim()]
+                                                        }));
+                                                        setNewMealItem('');
+                                                    }
+                                                }}
+                                                className="flex-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                                placeholder={`Add new ${activeTab} item...`}
+                                            />
+                                            <button
+                                                onClick={() => {
+                                                    if (newMealItem.trim()) {
+                                                        const key = `${activeTab}Preferences` as keyof UserPreferences;
+                                                        setLocalPrefs(prev => ({
+                                                            ...prev,
+                                                            [key]: [...(prev[key] as string[]), newMealItem.trim()]
+                                                        }));
+                                                        setNewMealItem('');
+                                                    }
+                                                }}
+                                                disabled={!newMealItem.trim()}
+                                                className="px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                                            >
+                                                <Plus className="w-4 h-4" />
+                                            </button>
+                                        </div>
                                     </div>
                                 )}
                             </div>
                         </div>
 
-                        <div className="p-3 sm:p-6 border-t flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 shrink-0 bg-white z-20">
-                            <button onClick={onClose} className="px-4 sm:px-6 py-2 sm:py-2.5 text-gray-600 font-medium hover:bg-gray-100 rounded-xl transition-colors order-2 sm:order-1">Cancel</button>
+                        {/* Footer - Hidden on mobile (icons in header) */}
+                        <div className="hidden sm:flex p-6 border-t justify-end gap-3 shrink-0 bg-white z-20">
+                            <button onClick={onClose} className="px-6 py-2.5 text-gray-600 font-medium hover:bg-gray-100 rounded-xl transition-colors">Cancel</button>
                             <button
                                 onClick={handleSave}
-                                className="px-6 sm:px-8 py-2.5 bg-gray-900 text-white rounded-xl font-bold hover:bg-gray-800 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all order-1 sm:order-2"
+                                className="px-8 py-2.5 bg-gray-900 text-white rounded-xl font-bold hover:bg-gray-800 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all"
                             >
                                 <Save className="w-4 h-4" /> Save Profile
                             </button>
