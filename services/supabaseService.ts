@@ -30,6 +30,8 @@ export interface UserSettings {
     geminiApiKey: string;
     cookName: string;
     cookWhatsappNumber: string;
+    currentProfileId?: string;
+    preferredLanguage?: 'English' | 'Hindi';
 }
 
 export const getUserSettings = async (userId: string): Promise<UserSettings | null> => {
@@ -38,7 +40,9 @@ export const getUserSettings = async (userId: string): Promise<UserSettings | nu
         return {
             geminiApiKey: localStorage.getItem('gemini_api_key') || '',
             cookName: localStorage.getItem('cook_name') || '',
-            cookWhatsappNumber: localStorage.getItem('cook_number') || ''
+            cookWhatsappNumber: localStorage.getItem('cook_number') || '',
+            currentProfileId: localStorage.getItem('cookcommander_current_profile_id') || undefined,
+            preferredLanguage: (localStorage.getItem('cookcommander_preferred_language') as 'English' | 'Hindi') || 'English'
         };
     }
 
@@ -59,7 +63,9 @@ export const getUserSettings = async (userId: string): Promise<UserSettings | nu
         return {
             geminiApiKey: data.gemini_api_key || '',
             cookName: data.cook_name || '',
-            cookWhatsappNumber: data.cook_whatsapp_number || ''
+            cookWhatsappNumber: data.cook_whatsapp_number || '',
+            currentProfileId: data.current_profile_id || undefined,
+            preferredLanguage: (data.preferred_language as 'English' | 'Hindi') || 'English'
         };
     } catch (err) {
         console.error('Error in getUserSettings:', err);
@@ -73,6 +79,8 @@ export const saveUserSettings = async (userId: string, settings: Partial<UserSet
         if (settings.geminiApiKey !== undefined) localStorage.setItem('gemini_api_key', settings.geminiApiKey);
         if (settings.cookName !== undefined) localStorage.setItem('cook_name', settings.cookName);
         if (settings.cookWhatsappNumber !== undefined) localStorage.setItem('cook_number', settings.cookWhatsappNumber);
+        if (settings.currentProfileId !== undefined) localStorage.setItem('cookcommander_current_profile_id', settings.currentProfileId);
+        if (settings.preferredLanguage !== undefined) localStorage.setItem('cookcommander_preferred_language', settings.preferredLanguage);
         return;
     }
 
@@ -81,6 +89,8 @@ export const saveUserSettings = async (userId: string, settings: Partial<UserSet
         if (settings.geminiApiKey !== undefined) updateData.gemini_api_key = settings.geminiApiKey;
         if (settings.cookName !== undefined) updateData.cook_name = settings.cookName;
         if (settings.cookWhatsappNumber !== undefined) updateData.cook_whatsapp_number = settings.cookWhatsappNumber;
+        if (settings.currentProfileId !== undefined) updateData.current_profile_id = settings.currentProfileId;
+        if (settings.preferredLanguage !== undefined) updateData.preferred_language = settings.preferredLanguage;
 
         const { error } = await supabase
             .from('user_settings')
@@ -105,6 +115,8 @@ interface PreferenceProfileRow {
     user_id: string;
     name: string;
     dietary_type: string | null;
+    dietary_types: string[] | null;
+    dietary_details: string | null;
     allergies: string[] | null;
     dislikes: string[] | null;
     breakfast_preferences: string[] | null;
@@ -112,6 +124,10 @@ interface PreferenceProfileRow {
     dinner_preferences: string[] | null;
     special_instructions: string | null;
     pantry_staples: string[] | null;
+    meals_to_prepare: string[] | null;
+    non_veg_preferences: string[] | null;
+    language: string | null;
+    quick_cook_instructions: string[] | null;
     is_default: boolean;
     created_at: string;
     updated_at: string;
@@ -132,6 +148,8 @@ const profileRowToApp = (row: PreferenceProfileRow): PreferenceProfile => ({
     id: row.id,
     name: row.name,
     dietaryType: row.dietary_type || '',
+    dietaryTypes: row.dietary_types || [],
+    dietaryDetails: row.dietary_details || '',
     allergies: row.allergies || [],
     dislikes: row.dislikes || [],
     breakfastPreferences: row.breakfast_preferences || [],
@@ -139,6 +157,10 @@ const profileRowToApp = (row: PreferenceProfileRow): PreferenceProfile => ({
     dinnerPreferences: row.dinner_preferences || [],
     specialInstructions: row.special_instructions || '',
     pantryStaples: row.pantry_staples || [],
+    mealsToPrepare: (row.meals_to_prepare || ['breakfast', 'lunch', 'dinner']) as ('breakfast' | 'lunch' | 'dinner')[],
+    nonVegPreferences: row.non_veg_preferences || [],
+    language: (row.language || 'English') as 'English' | 'Hindi',
+    quickCookInstructions: row.quick_cook_instructions || [],
 });
 
 const profileAppToRow = (profile: PreferenceProfile, userId: string) => ({
@@ -146,6 +168,8 @@ const profileAppToRow = (profile: PreferenceProfile, userId: string) => ({
     user_id: userId,
     name: profile.name,
     dietary_type: profile.dietaryType,
+    dietary_types: profile.dietaryTypes || [],
+    dietary_details: profile.dietaryDetails || '',
     allergies: profile.allergies,
     dislikes: profile.dislikes,
     breakfast_preferences: profile.breakfastPreferences,
@@ -153,6 +177,10 @@ const profileAppToRow = (profile: PreferenceProfile, userId: string) => ({
     dinner_preferences: profile.dinnerPreferences,
     special_instructions: profile.specialInstructions,
     pantry_staples: profile.pantryStaples,
+    meals_to_prepare: profile.mealsToPrepare || ['breakfast', 'lunch', 'dinner'],
+    non_veg_preferences: profile.nonVegPreferences || [],
+    language: profile.language || 'English',
+    quick_cook_instructions: profile.quickCookInstructions || [],
 });
 
 const scheduledMealRowToDay = (row: ScheduledMealRow): DayPlan => ({

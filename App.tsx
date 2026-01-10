@@ -85,8 +85,21 @@ function App() {
           } else {
             setProfiles(loadedProfiles);
           }
-          // Load current profile ID from localStorage as it's session-specific
-          const savedCurrentId = localStorage.getItem('cookcommander_current_profile_id');
+          // Load current profile ID - check Supabase first for cross-device sync
+          let savedCurrentId = localStorage.getItem('cookcommander_current_profile_id');
+
+          // For authenticated users, also check Supabase for cross-device persistence
+          if (!skipAuth && userId !== 'local') {
+            try {
+              const userSettings = await supabaseService.getUserSettings(userId);
+              if (userSettings?.currentProfileId) {
+                savedCurrentId = userSettings.currentProfileId;
+              }
+            } catch (e) {
+              console.warn('Could not load user settings, using localStorage');
+            }
+          }
+
           if (savedCurrentId && loadedProfiles.find(p => p.id === savedCurrentId)) {
             setCurrentProfileId(savedCurrentId);
           } else {
@@ -147,10 +160,14 @@ function App() {
     return () => subscription.unsubscribe();
   }, [isAuthenticated, userId, skipAuth]);
 
-  // Save current profile ID to localStorage
+  // Save current profile ID to localStorage and Supabase
   useEffect(() => {
     localStorage.setItem('cookcommander_current_profile_id', currentProfileId);
-  }, [currentProfileId]);
+    // Also save to Supabase for authenticated users
+    if (isAuthenticated && userId && !skipAuth) {
+      supabaseService.saveUserSettings(userId, { currentProfileId }).catch(console.error);
+    }
+  }, [currentProfileId, isAuthenticated, userId, skipAuth]);
 
   // Update meal history from schedule (for offline compatibility)
   useEffect(() => {

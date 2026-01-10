@@ -110,8 +110,24 @@ export const generateWeeklyPlan = async (
       `;
     }
 
+    // Check if Hindi output is requested
+    const isHindi = preferences.language === 'Hindi';
+
+    // Build language instruction based on preference
+    const languageInstruction = isHindi ? `
+    LANGUAGE REQUIREMENT:
+    - Output ALL meal names in HINDI DEVANAGARI script (हिंदी में)
+    - Day names MUST be in Hindi: सोमवार, मंगलवार, बुधवार, गुरुवार, शुक्रवार, शनिवार, रविवार
+    - Example meal names: "पोहा", "दाल चावल", "पनीर टिक्का मसाला", "रोटी सब्जी"
+    - Keep meal names SHORT (2-4 words in Hindi)
+    ` : `
+    LANGUAGE REQUIREMENT:
+    - Output meal names in English
+    - Day names: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday
+    `;
+
     const prompt = `
-    You are a professional meal planner. Generate a weekly meal plan (7 days: Monday to Sunday) based on these preferences:
+    You are a professional meal planner. Generate a weekly meal plan (7 days: ${isHindi ? 'सोमवार to रविवार' : 'Monday to Sunday'}) based on these preferences:
     
     Dietary Type: ${preferences.dietaryType}
     Allergies: ${preferences.allergies.join(", ") || "None"}
@@ -121,7 +137,7 @@ export const generateWeeklyPlan = async (
     Dinner Prefs: ${preferences.dinnerPreferences.join(", ") || "Any"}
     Special Instructions: ${preferences.specialInstructions || "None"}
     Pantry Staples: ${preferences.pantryStaples.join(", ") || "Standard Indian pantry"}
-    
+    ${languageInstruction}
     SEASONAL CONTEXT:
     - Current Month: ${month}
     - Season: ${season}
