@@ -207,50 +207,32 @@ const PreferencesModal: React.FC<Props> = ({ profiles, currentProfileId, history
         <div className="fixed inset-0 bg-black/50 md:bg-black/50 flex md:items-center md:justify-center z-50" style={{ minHeight: '100dvh' }}>
             <div className="bg-white w-full h-full md:rounded-2xl md:shadow-xl md:max-w-5xl md:h-[85vh] md:m-4 overflow-hidden flex flex-col">
 
-                {/* Mobile Header with Profile Selector */}
-                <div className="md:hidden shrink-0 bg-white border-b border-gray-200">
-                    {/* Mobile Profile Dropdown Toggle */}
-                    <button
-                        onClick={() => setMobileProfilesExpanded(!mobileProfilesExpanded)}
-                        className="w-full p-4 flex items-center justify-between text-left"
-                    >
-                        <div className="flex items-center gap-2">
-                            <User className="w-5 h-5 text-indigo-600" />
-                            <span className="font-medium text-gray-800">{currentProfile.name}</span>
-                        </div>
-                        {mobileProfilesExpanded ? <ChevronUp className="w-5 h-5 text-gray-400" /> : <ChevronDown className="w-5 h-5 text-gray-400" />}
-                    </button>
-
-                    {/* Expanded Profile List */}
-                    {mobileProfilesExpanded && (
-                        <div className="px-4 pb-4 space-y-2 border-t border-gray-100 pt-2 bg-gray-50 max-h-[40vh] overflow-y-auto">
+                {/* Mobile Header with Profile Selector - Two Sections */}
+                <div className="md:hidden shrink-0 bg-white border-b border-gray-200 p-3 flex items-center justify-between gap-3">
+                    {/* Profile Dropdown */}
+                    <div className="flex-1 flex items-center gap-2">
+                        <User className="w-4 h-4 text-indigo-600 shrink-0" />
+                        <select
+                            value={currentProfileId}
+                            onChange={(e) => handleProfileSelect(e.target.value)}
+                            className="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm font-medium text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        >
                             {profiles.map(p => (
-                                <div key={p.id} className={`flex items-center gap-2 rounded-lg transition-colors ${currentProfileId === p.id ? 'bg-indigo-50 border border-indigo-200' : 'bg-white border border-gray-200'}`}>
-                                    <button
-                                        onClick={() => handleProfileSelect(p.id)}
-                                        className="flex-1 text-left px-3 py-3 flex items-center gap-2"
-                                    >
-                                        <User className="w-4 h-4 opacity-70" />
-                                        <span className={`truncate text-sm font-medium ${currentProfileId === p.id ? 'text-indigo-600' : 'text-gray-700'}`}>{p.name}</span>
-                                    </button>
-                                    {profiles.length > 1 && onDeleteProfile && (
-                                        <button
-                                            onClick={(e) => { e.stopPropagation(); handleDeleteProfile(p.id); }}
-                                            className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg mr-1"
-                                        >
-                                            <Trash2 className="w-4 h-4" />
-                                        </button>
-                                    )}
-                                </div>
+                                <option key={p.id} value={p.id}>{p.name}</option>
                             ))}
-                            <button
-                                onClick={handleCreateNew}
-                                className="w-full py-3 flex items-center justify-center gap-2 bg-indigo-600 text-white rounded-lg text-sm font-bold hover:bg-indigo-700 transition-all"
-                            >
-                                <Plus className="w-4 h-4" /> New Profile
-                            </button>
-                        </div>
-                    )}
+                        </select>
+                        <button
+                            onClick={handleCreateNew}
+                            className="p-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+                            title="New Profile"
+                        >
+                            <Plus className="w-4 h-4" />
+                        </button>
+                    </div>
+                    {/* Close Button */}
+                    <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg">
+                        <X className="w-5 h-5 text-gray-500" />
+                    </button>
                 </div>
 
                 {/* Desktop + Mobile Content Wrapper */}
@@ -305,8 +287,8 @@ const PreferencesModal: React.FC<Props> = ({ profiles, currentProfileId, history
 
                     {/* Main Content */}
                     <div className="flex-1 flex flex-col h-full overflow-hidden">
-                        {/* Header */}
-                        <div className="bg-white p-6 border-b flex justify-between items-center z-10 shrink-0">
+                        {/* Header - Hidden on mobile (already in profile bar) */}
+                        <div className="hidden md:flex bg-white p-6 border-b justify-between items-center z-10 shrink-0">
                             <div className="flex-1 mr-8">
                                 <input
                                     type="text"
@@ -322,8 +304,8 @@ const PreferencesModal: React.FC<Props> = ({ profiles, currentProfileId, history
                             </button>
                         </div>
 
-                        {/* AI Import Box */}
-                        <div className="px-6 pt-6 shrink-0">
+                        {/* AI Import Box - Hidden on mobile for compact layout */}
+                        <div className="hidden md:block px-6 pt-6 shrink-0">
                             <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 flex flex-col gap-3">
                                 <div className="flex items-center gap-2 text-blue-900">
                                     <Wand2 className="w-5 h-5" />
@@ -352,7 +334,7 @@ const PreferencesModal: React.FC<Props> = ({ profiles, currentProfileId, history
                         </div>
 
                         {/* Tab Navigation */}
-                        <div className="px-6 pt-6 flex gap-2 overflow-x-auto shrink-0 border-b border-gray-100 pb-1">
+                        <div className="px-3 pt-3 sm:px-6 sm:pt-6 flex gap-2 overflow-x-auto shrink-0 border-b border-gray-100 pb-1">
                             <TabButton id="general" label="General" icon={AlertCircle} />
                             <TabButton id="breakfast" label="Breakfast" icon={Coffee} />
                             <TabButton id="lunch" label="Lunch" icon={Sun} />
@@ -360,7 +342,7 @@ const PreferencesModal: React.FC<Props> = ({ profiles, currentProfileId, history
                         </div>
 
                         {/* Tab Content */}
-                        <div className="p-6 overflow-y-auto flex-1 bg-white overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
+                        <div className="p-3 sm:p-6 overflow-y-auto flex-1 bg-white overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
                             <div className="max-w-3xl">
                                 {activeTab === 'general' && (
                                     <div className="space-y-6 animate-in fade-in duration-200">
@@ -413,11 +395,11 @@ const PreferencesModal: React.FC<Props> = ({ profiles, currentProfileId, history
                             </div>
                         </div>
 
-                        <div className="p-6 border-t flex justify-end gap-3 shrink-0 bg-white z-20">
-                            <button onClick={onClose} className="px-6 py-2.5 text-gray-600 font-medium hover:bg-gray-100 rounded-xl transition-colors">Cancel</button>
+                        <div className="p-3 sm:p-6 border-t flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 shrink-0 bg-white z-20">
+                            <button onClick={onClose} className="px-4 sm:px-6 py-2 sm:py-2.5 text-gray-600 font-medium hover:bg-gray-100 rounded-xl transition-colors order-2 sm:order-1">Cancel</button>
                             <button
                                 onClick={handleSave}
-                                className="px-8 py-2.5 bg-gray-900 text-white rounded-xl font-bold hover:bg-gray-800 flex items-center gap-2 shadow-lg hover:shadow-xl transition-all"
+                                className="px-6 sm:px-8 py-2.5 bg-gray-900 text-white rounded-xl font-bold hover:bg-gray-800 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all order-1 sm:order-2"
                             >
                                 <Save className="w-4 h-4" /> Save Profile
                             </button>
