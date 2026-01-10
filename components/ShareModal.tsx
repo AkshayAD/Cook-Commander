@@ -182,13 +182,13 @@ const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, type, data, da
                         </button>
                     </div>
 
-                    {/* Scrollable Content Area */}
+                    {/* Scrollable Content Area - Full vertical scroll for image */}
                     <div
-                        className="flex-1 overflow-y-auto p-3 sm:p-6 bg-gray-100 flex justify-center overscroll-contain"
+                        className="flex-1 overflow-y-auto overflow-x-hidden p-3 sm:p-6 bg-gray-100 overscroll-contain"
                         style={{ WebkitOverflowScrolling: 'touch' }}
                     >
-                        {/* Preview Card - Responsive */}
-                        <div className="shadow-2xl rounded-sm overflow-hidden w-full max-w-[500px]">
+                        {/* Preview Card - Scrollable */}
+                        <div className="shadow-2xl rounded-sm overflow-visible mx-auto max-w-[500px]">
                             <ShareableCard type={type} data={data} dateRange={dateRange} forCapture={false} />
                         </div>
                     </div>

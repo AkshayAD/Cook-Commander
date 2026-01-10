@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { ChefHat, ShoppingCart, Settings, RefreshCw, CalendarDays, FileText, Archive, ChevronDown, Calendar as CalendarIcon, ClipboardList, LogOut, Cpu, Share2 } from 'lucide-react';
 import { WeeklyPlan, UserPreferences, GroceryItem, PreferenceProfile, MealHistoryEntry, DayPlan, Schedule, MealTransfer } from './types';
-import { DEFAULT_PREFERENCES } from './constants';
+import { DEFAULT_PREFERENCES, DEFAULT_PROFILE_TEMPLATES } from './constants';
 import { generateWeeklyPlan, generateGroceryList, regenerateSingleMeal, smartEditMeals, generateGroceryListFromSchedule } from './services/geminiService';
 import { useAuth } from './contexts/AuthContext';
 import { useSettings } from './contexts/SettingsContext';
@@ -77,16 +77,25 @@ function App() {
             setCurrentProfileId(loadedProfiles[0].id);
           }
         } else {
-          // Create default profile with proper UUID for Supabase
-          const defaultProfileId = crypto.randomUUID();
-          const defaultProfile: PreferenceProfile = {
+          // Create default profiles for new users
+          const defaultProfiles: PreferenceProfile[] = DEFAULT_PROFILE_TEMPLATES.map(template => ({
+            ...template,
+            id: crypto.randomUUID()
+          }));
+          // Add a blank "My Preferences" profile at the start
+          const blankProfileId = crypto.randomUUID();
+          const blankProfile: PreferenceProfile = {
             ...DEFAULT_PREFERENCES,
-            id: defaultProfileId,
-            name: 'Default Preferences'
+            id: blankProfileId,
+            name: 'My Preferences'
           };
-          setProfiles([defaultProfile]);
-          setCurrentProfileId(defaultProfileId);
-          await supabaseService.savePreferenceProfile(defaultProfile, userId);
+          const allProfiles = [blankProfile, ...defaultProfiles];
+          setProfiles(allProfiles);
+          setCurrentProfileId(blankProfileId);
+          // Save all profiles to Supabase
+          for (const profile of allProfiles) {
+            await supabaseService.savePreferenceProfile(profile, userId);
+          }
         }
 
         // Load current plan
@@ -505,16 +514,17 @@ function App() {
 
           {/* Right: Actions */}
           <div className="flex items-center gap-1 sm:gap-2">
-            {/* Profile Selector (Meal Preferences) */}
-            <div className="relative group">
-              <button
-                onClick={() => setIsPreferencesOpen(true)}
-                className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium text-gray-700 transition-colors min-h-[44px]"
-              >
-                <span className="max-w-[60px] sm:max-w-[100px] truncate hidden xs:inline">{activeProfileName}</span>
-                <ChevronDown className="w-4 h-4" />
-              </button>
-            </div>
+            {/* Profile Selector - Quick Switch */}
+            <select
+              value={currentProfileId}
+              onChange={(e) => setCurrentProfileId(e.target.value)}
+              className="px-2 sm:px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium text-gray-700 transition-colors min-h-[44px] max-w-[100px] sm:max-w-[140px] truncate border-none focus:ring-2 focus:ring-indigo-500"
+              title="Switch Profile"
+            >
+              {profiles.map(p => (
+                <option key={p.id} value={p.id}>{p.name}</option>
+              ))}
+            </select>
 
             {/* AI Settings */}
             <button
