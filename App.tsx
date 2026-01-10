@@ -174,6 +174,21 @@ function App() {
     }
   };
 
+  const handleDeleteProfile = async (profileId: string) => {
+    try {
+      await supabaseService.deletePreferenceProfile(profileId, userId);
+      const newProfiles = profiles.filter(p => p.id !== profileId);
+      setProfiles(newProfiles);
+      // Switch to first remaining profile if deleted current
+      if (currentProfileId === profileId && newProfiles.length > 0) {
+        setCurrentProfileId(newProfiles[0].id);
+      }
+    } catch (error: any) {
+      console.error('Failed to delete profile:', error);
+      alert(`Failed to delete profile: ${error?.message || 'Unknown error'}`);
+    }
+  };
+
   const handleLoadWeek = useCallback(async (date: Date) => {
     const start = startOfWeek(date, { weekStartsOn: 1 });
     const end = endOfWeek(date, { weekStartsOn: 1 });
@@ -702,6 +717,7 @@ function App() {
           history={mealHistory}
           onSaveProfile={handleSaveProfile}
           onSwitchProfile={setCurrentProfileId}
+          onDeleteProfile={handleDeleteProfile}
           onClose={() => setIsPreferencesOpen(false)}
         />
       )}

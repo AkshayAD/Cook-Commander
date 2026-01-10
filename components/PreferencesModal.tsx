@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { UserPreferences, PreferenceProfile, MealHistoryEntry } from '../types';
 import { parsePreferencesFromText, optimizePreferencesFromHistory, getLearningSuggestions, LearningSuggestions } from '../services/geminiService';
 import { useSettings } from '../contexts/SettingsContext';
-import { X, Wand2, Save, History, Plus, User, Coffee, Sun, Moon, AlertCircle, Check, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { X, Wand2, Save, History, Plus, User, Coffee, Sun, Moon, AlertCircle, Check, ThumbsUp, ThumbsDown, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface Props {
     profiles: PreferenceProfile[];
@@ -10,10 +10,11 @@ interface Props {
     history: MealHistoryEntry[];
     onSaveProfile: (profile: PreferenceProfile) => void;
     onSwitchProfile: (id: string) => void;
+    onDeleteProfile?: (id: string) => void;
     onClose: () => void;
 }
 
-const PreferencesModal: React.FC<Props> = ({ profiles, currentProfileId, history, onSaveProfile, onSwitchProfile, onClose }) => {
+const PreferencesModal: React.FC<Props> = ({ profiles, currentProfileId, history, onSaveProfile, onSwitchProfile, onDeleteProfile, onClose }) => {
     const { apiKey, modelName } = useSettings();
     const aiConfig = { apiKey, modelName };
 
@@ -27,6 +28,7 @@ const PreferencesModal: React.FC<Props> = ({ profiles, currentProfileId, history
     const [activeTab, setActiveTab] = useState<'general' | 'breakfast' | 'lunch' | 'dinner'>('general');
     const [learningSuggestions, setLearningSuggestions] = useState<LearningSuggestions | null>(null);
     const [showLearningModal, setShowLearningModal] = useState(false);
+    const [mobileProfilesExpanded, setMobileProfilesExpanded] = useState(false);
 
     // Lock body scroll when modal is open
     useEffect(() => {
@@ -36,6 +38,15 @@ const PreferencesModal: React.FC<Props> = ({ profiles, currentProfileId, history
         };
     }, []);
 
+    // Delete profile handler
+    const handleDeleteProfile = (id: string) => {
+        if (!onDeleteProfile) return;
+        const profile = profiles.find(p => p.id === id);
+        if (window.confirm(`Delete "${profile?.name}"? This cannot be undone.`)) {
+            onDeleteProfile(id);
+        }
+    };
+
     // When switching profiles via internal dropdown
     const handleProfileSelect = (id: string) => {
         onSwitchProfile(id);
@@ -44,6 +55,7 @@ const PreferencesModal: React.FC<Props> = ({ profiles, currentProfileId, history
             setLocalPrefs(newProfile);
             setProfileName(newProfile.name);
         }
+        setMobileProfilesExpanded(false); // Close mobile dropdown
     };
 
     const handleCreateNew = () => {
@@ -192,255 +204,314 @@ const PreferencesModal: React.FC<Props> = ({ profiles, currentProfileId, history
     );
 
     return (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-2 sm:p-4" style={{ minHeight: '100dvh' }}>
-            <div className="bg-white rounded-2xl shadow-xl w-full max-w-5xl h-[95vh] sm:h-[85vh] overflow-hidden flex flex-col md:flex-row">
+        <div className="fixed inset-0 bg-black/50 md:bg-black/50 flex md:items-center md:justify-center z-50" style={{ minHeight: '100dvh' }}>
+            <div className="bg-white w-full h-full md:rounded-2xl md:shadow-xl md:max-w-5xl md:h-[85vh] md:m-4 overflow-hidden flex flex-col">
 
-                {/* Sidebar for Profiles */}
-                <div className="w-full md:w-64 bg-gray-50 border-r border-gray-200 p-4 flex-shrink-0 overflow-y-auto flex flex-col">
-                    <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Saved Profiles</h3>
-                    <div className="space-y-1 flex-1">
-                        {profiles.map(p => (
-                            <button
-                                key={p.id}
-                                onClick={() => handleProfileSelect(p.id)}
-                                className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${currentProfileId === p.id ? 'bg-white shadow-sm border border-gray-200 text-indigo-600' : 'text-gray-600 hover:bg-gray-100'
-                                    }`}
-                            >
-                                <User className="w-4 h-4 opacity-70" />
-                                <span className="truncate">{p.name}</span>
-                            </button>
-                        ))}
-                    </div>
-
+                {/* Mobile Header with Profile Selector */}
+                <div className="md:hidden shrink-0 bg-white border-b border-gray-200">
+                    {/* Mobile Profile Dropdown Toggle */}
                     <button
-                        onClick={handleCreateNew}
-                        className="mt-4 w-full py-3 flex items-center justify-center gap-2 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-all active:scale-95"
+                        onClick={() => setMobileProfilesExpanded(!mobileProfilesExpanded)}
+                        className="w-full p-4 flex items-center justify-between text-left"
                     >
-                        <Plus className="w-4 h-4" /> New Profile
+                        <div className="flex items-center gap-2">
+                            <User className="w-5 h-5 text-indigo-600" />
+                            <span className="font-medium text-gray-800">{currentProfile.name}</span>
+                        </div>
+                        {mobileProfilesExpanded ? <ChevronUp className="w-5 h-5 text-gray-400" /> : <ChevronDown className="w-5 h-5 text-gray-400" />}
                     </button>
 
-                    <div className="mt-6 pt-6 border-t border-gray-200">
-                        <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Smart Learning</h3>
-                        <p className="text-[10px] text-gray-500 mb-3 leading-tight">Refine this profile based on meals you've accepted in the past.</p>
-                        <button
-                            onClick={handleOptimizeFromHistory}
-                            disabled={isOptimizing || history.length === 0}
-                            className="w-full py-2 bg-gradient-to-r from-violet-500 to-fuchsia-600 text-white rounded-lg text-xs font-bold hover:shadow-md disabled:opacity-50 flex items-center justify-center gap-2 transition-all"
-                        >
-                            {isOptimizing ? <Wand2 className="w-3 h-3 animate-spin" /> : <History className="w-3 h-3" />}
-                            Learn from History
-                        </button>
-                    </div>
+                    {/* Expanded Profile List */}
+                    {mobileProfilesExpanded && (
+                        <div className="px-4 pb-4 space-y-2 border-t border-gray-100 pt-2 bg-gray-50 max-h-[40vh] overflow-y-auto">
+                            {profiles.map(p => (
+                                <div key={p.id} className={`flex items-center gap-2 rounded-lg transition-colors ${currentProfileId === p.id ? 'bg-indigo-50 border border-indigo-200' : 'bg-white border border-gray-200'}`}>
+                                    <button
+                                        onClick={() => handleProfileSelect(p.id)}
+                                        className="flex-1 text-left px-3 py-3 flex items-center gap-2"
+                                    >
+                                        <User className="w-4 h-4 opacity-70" />
+                                        <span className={`truncate text-sm font-medium ${currentProfileId === p.id ? 'text-indigo-600' : 'text-gray-700'}`}>{p.name}</span>
+                                    </button>
+                                    {profiles.length > 1 && onDeleteProfile && (
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); handleDeleteProfile(p.id); }}
+                                            className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg mr-1"
+                                        >
+                                            <Trash2 className="w-4 h-4" />
+                                        </button>
+                                    )}
+                                </div>
+                            ))}
+                            <button
+                                onClick={handleCreateNew}
+                                className="w-full py-3 flex items-center justify-center gap-2 bg-indigo-600 text-white rounded-lg text-sm font-bold hover:bg-indigo-700 transition-all"
+                            >
+                                <Plus className="w-4 h-4" /> New Profile
+                            </button>
+                        </div>
+                    )}
                 </div>
 
-                {/* Main Content */}
-                <div className="flex-1 flex flex-col h-full overflow-hidden">
-                    {/* Header */}
-                    <div className="bg-white p-6 border-b flex justify-between items-center z-10 shrink-0">
-                        <div className="flex-1 mr-8">
-                            <input
-                                type="text"
-                                value={profileName}
-                                onChange={(e) => setProfileName(e.target.value)}
-                                className="text-2xl font-bold text-gray-900 border-none focus:ring-0 p-0 w-full placeholder-gray-300 focus:outline-none"
-                                placeholder="Profile Name"
-                            />
-                            <p className="text-sm text-gray-400">Manage detailed dietary preferences for the AI.</p>
+                {/* Desktop + Mobile Content Wrapper */}
+                <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
+
+                    {/* Desktop Sidebar - Hidden on Mobile */}
+                    <div className="hidden md:flex w-64 bg-gray-50 border-r border-gray-200 p-4 flex-shrink-0 overflow-y-auto flex-col">
+                        <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Saved Profiles</h3>
+                        <div className="space-y-1 flex-1">
+                            {profiles.map(p => (
+                                <div key={p.id} className={`flex items-center rounded-lg transition-colors ${currentProfileId === p.id ? 'bg-white shadow-sm border border-gray-200' : 'hover:bg-gray-100'}`}>
+                                    <button
+                                        onClick={() => handleProfileSelect(p.id)}
+                                        className="flex-1 text-left px-3 py-2 flex items-center gap-2"
+                                    >
+                                        <User className="w-4 h-4 opacity-70" />
+                                        <span className={`truncate text-sm font-medium ${currentProfileId === p.id ? 'text-indigo-600' : 'text-gray-600'}`}>{p.name}</span>
+                                    </button>
+                                    {profiles.length > 1 && onDeleteProfile && (
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); handleDeleteProfile(p.id); }}
+                                            className="p-1.5 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded mr-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                                            style={{ opacity: 1 }}
+                                        >
+                                            <Trash2 className="w-3.5 h-3.5" />
+                                        </button>
+                                    )}
+                                </div>
+                            ))}
                         </div>
-                        <button onClick={onClose} className="p-3 hover:bg-gray-100 rounded-full transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center">
-                            <X className="w-6 h-6 text-gray-500" />
+
+                        <button
+                            onClick={handleCreateNew}
+                            className="mt-4 w-full py-3 flex items-center justify-center gap-2 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-all active:scale-95"
+                        >
+                            <Plus className="w-4 h-4" /> New Profile
                         </button>
+
+                        <div className="mt-6 pt-6 border-t border-gray-200">
+                            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Smart Learning</h3>
+                            <p className="text-[10px] text-gray-500 mb-3 leading-tight">Refine this profile based on meals you've accepted in the past.</p>
+                            <button
+                                onClick={handleOptimizeFromHistory}
+                                disabled={isOptimizing || history.length === 0}
+                                className="w-full py-2 bg-gradient-to-r from-violet-500 to-fuchsia-600 text-white rounded-lg text-xs font-bold hover:shadow-md disabled:opacity-50 flex items-center justify-center gap-2 transition-all"
+                            >
+                                {isOptimizing ? <Wand2 className="w-3 h-3 animate-spin" /> : <History className="w-3 h-3" />}
+                                Learn from History
+                            </button>
+                        </div>
                     </div>
 
-                    {/* AI Import Box */}
-                    <div className="px-6 pt-6 shrink-0">
-                        <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 flex flex-col gap-3">
-                            <div className="flex items-center gap-2 text-blue-900">
-                                <Wand2 className="w-5 h-5" />
-                                <h3 className="text-sm font-bold">Quick Import / Fill</h3>
-                            </div>
-                            <div className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-start">
-                                <textarea
-                                    className="flex-1 px-3 py-2 bg-white border border-blue-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none text-gray-900 resize-none min-h-[80px]"
-                                    placeholder="Paste specific meal ideas, dietary needs, or notes here..."
-                                    rows={3}
-                                    value={rawText}
-                                    onChange={(e) => setRawText(e.target.value)}
+                    {/* Main Content */}
+                    <div className="flex-1 flex flex-col h-full overflow-hidden">
+                        {/* Header */}
+                        <div className="bg-white p-6 border-b flex justify-between items-center z-10 shrink-0">
+                            <div className="flex-1 mr-8">
+                                <input
+                                    type="text"
+                                    value={profileName}
+                                    onChange={(e) => setProfileName(e.target.value)}
+                                    className="text-2xl font-bold text-gray-900 border-none focus:ring-0 p-0 w-full placeholder-gray-300 focus:outline-none"
+                                    placeholder="Profile Name"
                                 />
-                                <button
-                                    onClick={handleAnalyze}
-                                    disabled={isAnalyzing || !rawText}
-                                    className="w-full sm:w-auto px-4 py-3 sm:py-2 bg-blue-600 text-white text-sm rounded-lg font-bold hover:bg-blue-700 disabled:opacity-50 transition-colors whitespace-nowrap flex items-center justify-center min-h-[44px] sm:min-h-[86px]"
-                                >
-                                    {isAnalyzing ? 'Extracting...' : 'Extract'}
-                                </button>
+                                <p className="text-sm text-gray-400">Manage detailed dietary preferences for the AI.</p>
                             </div>
-                            <p className="text-xs text-blue-600/80">
-                                Extracted preferences will be appended to your current settings. Existing general instructions are preserved.
-                            </p>
+                            <button onClick={onClose} className="p-3 hover:bg-gray-100 rounded-full transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center">
+                                <X className="w-6 h-6 text-gray-500" />
+                            </button>
                         </div>
-                    </div>
 
-                    {/* Tab Navigation */}
-                    <div className="px-6 pt-6 flex gap-2 overflow-x-auto shrink-0 border-b border-gray-100 pb-1">
-                        <TabButton id="general" label="General" icon={AlertCircle} />
-                        <TabButton id="breakfast" label="Breakfast" icon={Coffee} />
-                        <TabButton id="lunch" label="Lunch" icon={Sun} />
-                        <TabButton id="dinner" label="Dinner" icon={Moon} />
-                    </div>
-
-                    {/* Tab Content */}
-                    <div className="p-6 overflow-y-auto flex-1 bg-white overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
-                        <div className="max-w-3xl">
-                            {activeTab === 'general' && (
-                                <div className="space-y-6 animate-in fade-in duration-200">
-                                    <div>
-                                        <label className="block text-sm font-bold text-gray-700 mb-2">Dietary Type</label>
-                                        <input
-                                            type="text"
-                                            value={localPrefs.dietaryType}
-                                            onChange={(e) => handleChange('dietaryType', e.target.value)}
-                                            className="w-full p-3 bg-gray-50 border-gray-200 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-black font-medium"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-bold text-gray-700 mb-2">Dislikes / Restrictions</label>
-                                        <textarea
-                                            value={localPrefs.dislikes.join(', ')}
-                                            onChange={(e) => handleChange('dislikes', e.target.value)}
-                                            className="w-full p-3 bg-gray-50 border-gray-200 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-black font-medium"
-                                            rows={3}
-                                            placeholder="Comma separated values e.g., Mushrooms, Brinjal"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-bold text-gray-700 mb-2">Special Instructions for Cook</label>
-                                        <textarea
-                                            value={localPrefs.specialInstructions}
-                                            onChange={(e) => handleChange('specialInstructions', e.target.value)}
-                                            className="w-full p-3 bg-gray-50 border-gray-200 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-black font-medium"
-                                            rows={4}
-                                        />
-                                    </div>
+                        {/* AI Import Box */}
+                        <div className="px-6 pt-6 shrink-0">
+                            <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 flex flex-col gap-3">
+                                <div className="flex items-center gap-2 text-blue-900">
+                                    <Wand2 className="w-5 h-5" />
+                                    <h3 className="text-sm font-bold">Quick Import / Fill</h3>
                                 </div>
-                            )}
-
-                            {(activeTab === 'breakfast' || activeTab === 'lunch' || activeTab === 'dinner') && (
-                                <div className="space-y-4 animate-in fade-in duration-200">
-                                    <div className="flex items-center justify-between">
-                                        <label className="block text-sm font-bold text-gray-700 capitalize">{activeTab} Preferences</label>
-                                        <span className="text-xs text-gray-400">One option per line or comma separated</span>
-                                    </div>
+                                <div className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-start">
                                     <textarea
-                                        value={localPrefs[`${activeTab}Preferences`].join(', ')}
-                                        onChange={(e) => handleChange(`${activeTab}Preferences` as any, e.target.value)}
-                                        className="w-full p-4 bg-gray-50 border-gray-200 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-gray-900 leading-relaxed font-medium"
-                                        rows={12}
-                                        placeholder={`Enter your preferred ${activeTab} options here...`}
+                                        className="flex-1 px-3 py-2 bg-white border border-blue-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none text-gray-900 resize-none min-h-[80px]"
+                                        placeholder="Paste specific meal ideas, dietary needs, or notes here..."
+                                        rows={3}
+                                        value={rawText}
+                                        onChange={(e) => setRawText(e.target.value)}
                                     />
+                                    <button
+                                        onClick={handleAnalyze}
+                                        disabled={isAnalyzing || !rawText}
+                                        className="w-full sm:w-auto px-4 py-3 sm:py-2 bg-blue-600 text-white text-sm rounded-lg font-bold hover:bg-blue-700 disabled:opacity-50 transition-colors whitespace-nowrap flex items-center justify-center min-h-[44px] sm:min-h-[86px]"
+                                    >
+                                        {isAnalyzing ? 'Extracting...' : 'Extract'}
+                                    </button>
                                 </div>
-                            )}
-                        </div>
-                    </div>
-
-                    <div className="p-6 border-t flex justify-end gap-3 shrink-0 bg-white z-20">
-                        <button onClick={onClose} className="px-6 py-2.5 text-gray-600 font-medium hover:bg-gray-100 rounded-xl transition-colors">Cancel</button>
-                        <button
-                            onClick={handleSave}
-                            className="px-8 py-2.5 bg-gray-900 text-white rounded-xl font-bold hover:bg-gray-800 flex items-center gap-2 shadow-lg hover:shadow-xl transition-all"
-                        >
-                            <Save className="w-4 h-4" /> Save Profile
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            {/* Learning Insights Modal */}
-            {showLearningModal && learningSuggestions && (
-                <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[60] p-2 sm:p-4" style={{ minHeight: '100dvh' }}>
-                    <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden max-h-[95vh] sm:max-h-[90vh] flex flex-col">
-                        <div className="p-5 border-b bg-gradient-to-r from-violet-500 to-fuchsia-600 text-white">
-                            <h3 className="font-bold text-lg flex items-center gap-2">
-                                <History className="w-5 h-5" />
-                                What I Learned from Your History
-                            </h3>
-                            <p className="text-sm text-white/80 mt-1">
-                                Analyzed {learningSuggestions.totalMealsAnalyzed} rated meals
-                            </p>
-                        </div>
-
-                        <div className="p-5 space-y-5 max-h-[60vh] overflow-y-auto">
-                            <div className="bg-violet-50 p-4 rounded-xl border border-violet-100">
-                                <p className="text-gray-800 font-medium">{learningSuggestions.summary}</p>
-                            </div>
-
-                            {learningSuggestions.likedPatterns.length > 0 && (
-                                <div>
-                                    <h4 className="text-sm font-bold text-gray-700 flex items-center gap-2 mb-2">
-                                        <ThumbsUp className="w-4 h-4 text-green-600" /> Patterns You Like
-                                    </h4>
-                                    <div className="flex flex-wrap gap-2">
-                                        {learningSuggestions.likedPatterns.map((p, i) => (
-                                            <span key={i} className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">{p}</span>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-
-                            {learningSuggestions.dislikedPatterns.length > 0 && (
-                                <div>
-                                    <h4 className="text-sm font-bold text-gray-700 flex items-center gap-2 mb-2">
-                                        <ThumbsDown className="w-4 h-4 text-red-500" /> Patterns to Avoid
-                                    </h4>
-                                    <div className="flex flex-wrap gap-2">
-                                        {learningSuggestions.dislikedPatterns.map((p, i) => (
-                                            <span key={i} className="px-3 py-1 bg-red-100 text-red-800 rounded-full text-xs font-medium">{p}</span>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-
-                            <div>
-                                <h4 className="text-sm font-bold text-gray-700 mb-2">Suggested Changes</h4>
-                                <div className="space-y-2 text-sm">
-                                    {learningSuggestions.suggestedAdditions.breakfastPreferences.length > 0 && (
-                                        <div className="flex items-start gap-2">
-                                            <Coffee className="w-4 h-4 text-amber-600 mt-0.5" />
-                                            <span className="text-gray-600"><strong>Breakfast:</strong> {learningSuggestions.suggestedAdditions.breakfastPreferences.join(', ')}</span>
-                                        </div>
-                                    )}
-                                    {learningSuggestions.suggestedAdditions.lunchPreferences.length > 0 && (
-                                        <div className="flex items-start gap-2">
-                                            <Sun className="w-4 h-4 text-orange-600 mt-0.5" />
-                                            <span className="text-gray-600"><strong>Lunch:</strong> {learningSuggestions.suggestedAdditions.lunchPreferences.join(', ')}</span>
-                                        </div>
-                                    )}
-                                    {learningSuggestions.suggestedAdditions.dinnerPreferences.length > 0 && (
-                                        <div className="flex items-start gap-2">
-                                            <Moon className="w-4 h-4 text-indigo-600 mt-0.5" />
-                                            <span className="text-gray-600"><strong>Dinner:</strong> {learningSuggestions.suggestedAdditions.dinnerPreferences.join(', ')}</span>
-                                        </div>
-                                    )}
-                                    {learningSuggestions.suggestedAdditions.dislikes.length > 0 && (
-                                        <div className="flex items-start gap-2">
-                                            <AlertCircle className="w-4 h-4 text-red-500 mt-0.5" />
-                                            <span className="text-gray-600"><strong>Add to Dislikes:</strong> {learningSuggestions.suggestedAdditions.dislikes.join(', ')}</span>
-                                        </div>
-                                    )}
-                                </div>
+                                <p className="text-xs text-blue-600/80">
+                                    Extracted preferences will be appended to your current settings. Existing general instructions are preserved.
+                                </p>
                             </div>
                         </div>
 
-                        <div className="p-5 border-t bg-gray-50 flex justify-end gap-3">
-                            <button onClick={() => { setShowLearningModal(false); setLearningSuggestions(null); }} className="px-5 py-2 text-gray-600 font-medium hover:bg-gray-100 rounded-lg transition-colors">Cancel</button>
-                            <button onClick={handleApplyLearning} disabled={isOptimizing} className="px-6 py-2 bg-gradient-to-r from-violet-500 to-fuchsia-600 text-white rounded-lg font-bold hover:shadow-lg disabled:opacity-50 flex items-center gap-2 transition-all">
-                                {isOptimizing ? <Wand2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-                                Apply to Profile
+                        {/* Tab Navigation */}
+                        <div className="px-6 pt-6 flex gap-2 overflow-x-auto shrink-0 border-b border-gray-100 pb-1">
+                            <TabButton id="general" label="General" icon={AlertCircle} />
+                            <TabButton id="breakfast" label="Breakfast" icon={Coffee} />
+                            <TabButton id="lunch" label="Lunch" icon={Sun} />
+                            <TabButton id="dinner" label="Dinner" icon={Moon} />
+                        </div>
+
+                        {/* Tab Content */}
+                        <div className="p-6 overflow-y-auto flex-1 bg-white overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
+                            <div className="max-w-3xl">
+                                {activeTab === 'general' && (
+                                    <div className="space-y-6 animate-in fade-in duration-200">
+                                        <div>
+                                            <label className="block text-sm font-bold text-gray-700 mb-2">Dietary Type</label>
+                                            <input
+                                                type="text"
+                                                value={localPrefs.dietaryType}
+                                                onChange={(e) => handleChange('dietaryType', e.target.value)}
+                                                className="w-full p-3 bg-gray-50 border-gray-200 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-black font-medium"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-bold text-gray-700 mb-2">Dislikes / Restrictions</label>
+                                            <textarea
+                                                value={localPrefs.dislikes.join(', ')}
+                                                onChange={(e) => handleChange('dislikes', e.target.value)}
+                                                className="w-full p-3 bg-gray-50 border-gray-200 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-black font-medium"
+                                                rows={3}
+                                                placeholder="Comma separated values e.g., Mushrooms, Brinjal"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-bold text-gray-700 mb-2">Special Instructions for Cook</label>
+                                            <textarea
+                                                value={localPrefs.specialInstructions}
+                                                onChange={(e) => handleChange('specialInstructions', e.target.value)}
+                                                className="w-full p-3 bg-gray-50 border-gray-200 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-black font-medium"
+                                                rows={4}
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+
+                                {(activeTab === 'breakfast' || activeTab === 'lunch' || activeTab === 'dinner') && (
+                                    <div className="space-y-4 animate-in fade-in duration-200">
+                                        <div className="flex items-center justify-between">
+                                            <label className="block text-sm font-bold text-gray-700 capitalize">{activeTab} Preferences</label>
+                                            <span className="text-xs text-gray-400">One option per line or comma separated</span>
+                                        </div>
+                                        <textarea
+                                            value={localPrefs[`${activeTab}Preferences`].join(', ')}
+                                            onChange={(e) => handleChange(`${activeTab}Preferences` as any, e.target.value)}
+                                            className="w-full p-4 bg-gray-50 border-gray-200 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-gray-900 leading-relaxed font-medium"
+                                            rows={12}
+                                            placeholder={`Enter your preferred ${activeTab} options here...`}
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="p-6 border-t flex justify-end gap-3 shrink-0 bg-white z-20">
+                            <button onClick={onClose} className="px-6 py-2.5 text-gray-600 font-medium hover:bg-gray-100 rounded-xl transition-colors">Cancel</button>
+                            <button
+                                onClick={handleSave}
+                                className="px-8 py-2.5 bg-gray-900 text-white rounded-xl font-bold hover:bg-gray-800 flex items-center gap-2 shadow-lg hover:shadow-xl transition-all"
+                            >
+                                <Save className="w-4 h-4" /> Save Profile
                             </button>
                         </div>
                     </div>
                 </div>
-            )}
+
+                {/* Learning Insights Modal */}
+                {showLearningModal && learningSuggestions && (
+                    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[60] p-2 sm:p-4" style={{ minHeight: '100dvh' }}>
+                        <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden max-h-[95vh] sm:max-h-[90vh] flex flex-col">
+                            <div className="p-5 border-b bg-gradient-to-r from-violet-500 to-fuchsia-600 text-white">
+                                <h3 className="font-bold text-lg flex items-center gap-2">
+                                    <History className="w-5 h-5" />
+                                    What I Learned from Your History
+                                </h3>
+                                <p className="text-sm text-white/80 mt-1">
+                                    Analyzed {learningSuggestions.totalMealsAnalyzed} rated meals
+                                </p>
+                            </div>
+
+                            <div className="p-5 space-y-5 max-h-[60vh] overflow-y-auto">
+                                <div className="bg-violet-50 p-4 rounded-xl border border-violet-100">
+                                    <p className="text-gray-800 font-medium">{learningSuggestions.summary}</p>
+                                </div>
+
+                                {learningSuggestions.likedPatterns.length > 0 && (
+                                    <div>
+                                        <h4 className="text-sm font-bold text-gray-700 flex items-center gap-2 mb-2">
+                                            <ThumbsUp className="w-4 h-4 text-green-600" /> Patterns You Like
+                                        </h4>
+                                        <div className="flex flex-wrap gap-2">
+                                            {learningSuggestions.likedPatterns.map((p, i) => (
+                                                <span key={i} className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">{p}</span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {learningSuggestions.dislikedPatterns.length > 0 && (
+                                    <div>
+                                        <h4 className="text-sm font-bold text-gray-700 flex items-center gap-2 mb-2">
+                                            <ThumbsDown className="w-4 h-4 text-red-500" /> Patterns to Avoid
+                                        </h4>
+                                        <div className="flex flex-wrap gap-2">
+                                            {learningSuggestions.dislikedPatterns.map((p, i) => (
+                                                <span key={i} className="px-3 py-1 bg-red-100 text-red-800 rounded-full text-xs font-medium">{p}</span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div>
+                                    <h4 className="text-sm font-bold text-gray-700 mb-2">Suggested Changes</h4>
+                                    <div className="space-y-2 text-sm">
+                                        {learningSuggestions.suggestedAdditions.breakfastPreferences.length > 0 && (
+                                            <div className="flex items-start gap-2">
+                                                <Coffee className="w-4 h-4 text-amber-600 mt-0.5" />
+                                                <span className="text-gray-600"><strong>Breakfast:</strong> {learningSuggestions.suggestedAdditions.breakfastPreferences.join(', ')}</span>
+                                            </div>
+                                        )}
+                                        {learningSuggestions.suggestedAdditions.lunchPreferences.length > 0 && (
+                                            <div className="flex items-start gap-2">
+                                                <Sun className="w-4 h-4 text-orange-600 mt-0.5" />
+                                                <span className="text-gray-600"><strong>Lunch:</strong> {learningSuggestions.suggestedAdditions.lunchPreferences.join(', ')}</span>
+                                            </div>
+                                        )}
+                                        {learningSuggestions.suggestedAdditions.dinnerPreferences.length > 0 && (
+                                            <div className="flex items-start gap-2">
+                                                <Moon className="w-4 h-4 text-indigo-600 mt-0.5" />
+                                                <span className="text-gray-600"><strong>Dinner:</strong> {learningSuggestions.suggestedAdditions.dinnerPreferences.join(', ')}</span>
+                                            </div>
+                                        )}
+                                        {learningSuggestions.suggestedAdditions.dislikes.length > 0 && (
+                                            <div className="flex items-start gap-2">
+                                                <AlertCircle className="w-4 h-4 text-red-500 mt-0.5" />
+                                                <span className="text-gray-600"><strong>Add to Dislikes:</strong> {learningSuggestions.suggestedAdditions.dislikes.join(', ')}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="p-5 border-t bg-gray-50 flex justify-end gap-3">
+                                <button onClick={() => { setShowLearningModal(false); setLearningSuggestions(null); }} className="px-5 py-2 text-gray-600 font-medium hover:bg-gray-100 rounded-lg transition-colors">Cancel</button>
+                                <button onClick={handleApplyLearning} disabled={isOptimizing} className="px-6 py-2 bg-gradient-to-r from-violet-500 to-fuchsia-600 text-white rounded-lg font-bold hover:shadow-lg disabled:opacity-50 flex items-center gap-2 transition-all">
+                                    {isOptimizing ? <Wand2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+                                    Apply to Profile
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

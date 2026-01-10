@@ -167,7 +167,7 @@ const CalendarView: React.FC<Props> = ({ schedule, onInitiateTransfer, onGenerat
         <div className="grid lg:grid-cols-3 gap-6 h-full">
             {/* Calendar Grid */}
             <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden flex flex-col">
-                <div className="p-4 flex justify-between items-center border-b">
+                <div className="p-2 sm:p-4 flex justify-between items-center border-b">
                     <div className="flex items-center gap-3">
                         <h2 className="font-bold text-lg text-gray-800">{format(currentMonth, 'MMMM yyyy')}</h2>
                         {isMultiSelectMode && (
@@ -235,7 +235,7 @@ const CalendarView: React.FC<Props> = ({ schedule, onInitiateTransfer, onGenerat
                         const dayOfWeek = firstDay.getDay();
                         const emptyCells = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
                         return Array(emptyCells).fill(null).map((_, i) => (
-                            <div key={`empty-${i}`} className="min-h-[80px] p-2 border-b border-r border-gray-100 bg-gray-50/50"></div>
+                            <div key={`empty-${i}`} className="min-h-[60px] sm:min-h-[80px] p-1 sm:p-2 border-b border-r border-gray-100 bg-gray-50/50"></div>
                         ));
                     })()}
                     {days.map((day) => {
@@ -253,7 +253,7 @@ const CalendarView: React.FC<Props> = ({ schedule, onInitiateTransfer, onGenerat
                             <button
                                 key={day.toISOString()}
                                 onClick={(e) => handleDayClick(day, e)}
-                                className={`min-h-[80px] p-2 border-b border-r border-gray-100 flex flex-col items-start gap-1 transition-colors hover:bg-gray-50 relative ${isSingleSelected ? 'bg-indigo-50 ring-inset ring-2 ring-indigo-500 z-10' : ''
+                                className={`min-h-[60px] sm:min-h-[80px] p-1 sm:p-2 border-b border-r border-gray-100 flex flex-col items-start gap-0.5 sm:gap-1 transition-colors hover:bg-gray-50 relative ${isSingleSelected ? 'bg-indigo-50 ring-inset ring-2 ring-indigo-500 z-10' : ''
                                     } ${isMultiSelected ? 'bg-green-50 ring-inset ring-2 ring-green-500' : ''}`}
                             >
                                 {isMultiSelected && (
@@ -289,8 +289,8 @@ const CalendarView: React.FC<Props> = ({ schedule, onInitiateTransfer, onGenerat
                 </div>
             </div>
 
-            {/* Day Detail Sidebar */}
-            <div className="lg:col-span-1 bg-white rounded-2xl shadow-sm border border-gray-200 flex flex-col">
+            {/* Day Detail Sidebar - Hidden on mobile, visible on lg */}
+            <div className={`lg:col-span-1 bg-white rounded-2xl shadow-sm border border-gray-200 flex flex-col ${selectedDate || isMultiSelectMode ? 'fixed inset-x-0 bottom-0 z-40 rounded-b-none max-h-[50vh] lg:static lg:max-h-none lg:rounded-2xl' : 'hidden lg:flex'}`}>
                 {isMultiSelectMode ? (
                     // Multi-select mode sidebar
                     <>
