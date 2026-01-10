@@ -7,7 +7,7 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, '.', '');
   const isProd = mode === 'production';
   return {
-    base: isProd ? '/QookCommander/' : '/',
+    base: '/',
     server: {
       port: 3000,
       host: '0.0.0.0',
