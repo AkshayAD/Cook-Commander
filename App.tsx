@@ -49,6 +49,7 @@ function App() {
   const [regenLoading, setRegenLoading] = useState(false);
   const [dataLoading, setDataLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'plan' | 'calendar' | 'grocery'>('plan');
+  const [showLanding, setShowLanding] = useState(false); // Allow logged-in users to view landing page
 
   // Get user ID (or 'local' for offline mode)
   const userId = user?.id || 'local';
@@ -520,6 +521,19 @@ function App() {
     return <LandingPage onSkipAuth={() => setSkipAuth(true)} />;
   }
 
+  // Show landing page for logged-in users who want to view it (logo click)
+  if (showLanding) {
+    return (
+      <LandingPage
+        onSkipAuth={() => setSkipAuth(true)}
+        isLoggedIn={!!user}
+        userEmail={user?.email}
+        onGoToDashboard={() => setShowLanding(false)}
+        onSignOut={async () => { await signOut(); setShowLanding(false); }}
+      />
+    );
+  }
+
   // Show loading while fetching data
   if (dataLoading) {
     return (
@@ -538,8 +552,8 @@ function App() {
       <header className="bg-white shadow-sm sticky top-0 z-30 shrink-0">
         <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
           {/* Left: Logo - Clickable Home */}
-          <a
-            href="/"
+          <button
+            onClick={() => setShowLanding(true)}
             className="flex items-center gap-2 hover:opacity-80 transition-opacity"
             title="Go to Home"
           >
@@ -548,7 +562,7 @@ function App() {
               alt="QookCommander"
               className="h-10 w-auto"
             />
-          </a>
+          </button>
 
           {/* Right: Actions */}
           <div className="flex items-center gap-1 sm:gap-2">

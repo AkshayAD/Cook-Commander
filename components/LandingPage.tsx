@@ -4,9 +4,19 @@ import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
 interface LandingPageProps {
     onSkipAuth?: () => void;
+    isLoggedIn?: boolean;
+    userEmail?: string;
+    onGoToDashboard?: () => void;
+    onSignOut?: () => void;
 }
 
-const LandingPage: React.FC<LandingPageProps> = ({ onSkipAuth }) => {
+const LandingPage: React.FC<LandingPageProps> = ({
+    onSkipAuth,
+    isLoggedIn = false,
+    userEmail,
+    onGoToDashboard,
+    onSignOut
+}) => {
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
     const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -72,18 +82,38 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSkipAuth }) => {
                             <a href="#features" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">Features</a>
                             <a href="#how-it-works" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">How it works</a>
                             <div className="flex items-center gap-4 ml-4">
-                                <button
-                                    onClick={() => openAuth('signin')}
-                                    className="text-sm font-semibold text-gray-900 hover:text-orange-600 transition-colors"
-                                >
-                                    Log in
-                                </button>
-                                <button
-                                    onClick={() => openAuth('signup')}
-                                    className="px-5 py-2.5 bg-gray-900 text-white text-sm font-bold rounded-full hover:bg-gray-800 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0"
-                                >
-                                    Get Started
-                                </button>
+                                {isLoggedIn ? (
+                                    <>
+                                        <span className="text-sm text-gray-500">{userEmail}</span>
+                                        <button
+                                            onClick={onGoToDashboard}
+                                            className="px-5 py-2.5 bg-gray-900 text-white text-sm font-bold rounded-full hover:bg-gray-800 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0"
+                                        >
+                                            Go to Dashboard
+                                        </button>
+                                        <button
+                                            onClick={onSignOut}
+                                            className="text-sm font-semibold text-gray-600 hover:text-red-600 transition-colors"
+                                        >
+                                            Sign Out
+                                        </button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <button
+                                            onClick={() => openAuth('signin')}
+                                            className="text-sm font-semibold text-gray-900 hover:text-orange-600 transition-colors"
+                                        >
+                                            Log in
+                                        </button>
+                                        <button
+                                            onClick={() => openAuth('signup')}
+                                            className="px-5 py-2.5 bg-gray-900 text-white text-sm font-bold rounded-full hover:bg-gray-800 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0"
+                                        >
+                                            Get Started
+                                        </button>
+                                    </>
+                                )}
                             </div>
                         </div>
 
@@ -101,8 +131,18 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSkipAuth }) => {
                     <div className="md:hidden bg-white border-t border-gray-100 py-4 px-4 flex flex-col gap-4 shadow-xl">
                         <a href="#features" onClick={() => setIsMobileMenuOpen(false)} className="text-base font-medium text-gray-700 py-2">Features</a>
                         <a href="#how-it-works" onClick={() => setIsMobileMenuOpen(false)} className="text-base font-medium text-gray-700 py-2">How it works</a>
-                        <button onClick={() => { openAuth('signin'); setIsMobileMenuOpen(false); }} className="text-left text-base font-medium text-gray-700 py-2">Log in</button>
-                        <button onClick={() => { openAuth('signup'); setIsMobileMenuOpen(false); }} className="btn-primary w-full py-3 bg-orange-600 text-white rounded-lg font-bold">Get Started</button>
+                        {isLoggedIn ? (
+                            <>
+                                <span className="text-sm text-gray-500 py-2">{userEmail}</span>
+                                <button onClick={() => { onGoToDashboard?.(); setIsMobileMenuOpen(false); }} className="btn-primary w-full py-3 bg-gray-900 text-white rounded-lg font-bold">Go to Dashboard</button>
+                                <button onClick={() => { onSignOut?.(); setIsMobileMenuOpen(false); }} className="text-left text-base font-medium text-red-600 py-2">Sign Out</button>
+                            </>
+                        ) : (
+                            <>
+                                <button onClick={() => { openAuth('signin'); setIsMobileMenuOpen(false); }} className="text-left text-base font-medium text-gray-700 py-2">Log in</button>
+                                <button onClick={() => { openAuth('signup'); setIsMobileMenuOpen(false); }} className="btn-primary w-full py-3 bg-orange-600 text-white rounded-lg font-bold">Get Started</button>
+                            </>
+                        )}
                     </div>
                 )}
             </nav>
@@ -127,17 +167,29 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSkipAuth }) => {
                     </p>
 
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <button
-                            onClick={() => openAuth('signup')}
-                            className="w-full sm:w-auto px-8 py-4 bg-gray-900 text-white font-bold rounded-full hover:bg-gray-800 transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1 flex items-center justify-center gap-2 group"
-                        >
-                            Start Planning Free
-                            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                        </button>
-                        {onSkipAuth && (
-                            <button onClick={onSkipAuth} className="text-sm text-gray-500 hover:text-gray-900 font-medium underline underline-offset-4 px-4 py-2">
-                                Try Offline Demo
+                        {isLoggedIn ? (
+                            <button
+                                onClick={onGoToDashboard}
+                                className="w-full sm:w-auto px-8 py-4 bg-gray-900 text-white font-bold rounded-full hover:bg-gray-800 transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1 flex items-center justify-center gap-2 group"
+                            >
+                                Go to Dashboard
+                                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                             </button>
+                        ) : (
+                            <>
+                                <button
+                                    onClick={() => openAuth('signup')}
+                                    className="w-full sm:w-auto px-8 py-4 bg-gray-900 text-white font-bold rounded-full hover:bg-gray-800 transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1 flex items-center justify-center gap-2 group"
+                                >
+                                    Start Planning Free
+                                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                                </button>
+                                {onSkipAuth && (
+                                    <button onClick={onSkipAuth} className="text-sm text-gray-500 hover:text-gray-900 font-medium underline underline-offset-4 px-4 py-2">
+                                        Try Offline Demo
+                                    </button>
+                                )}
+                            </>
                         )}
                     </div>
 
@@ -175,7 +227,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSkipAuth }) => {
                                     </div>
                                     <div className="relative perspective-1000">
                                         <div className="relative z-10 rounded-xl overflow-hidden shadow-2xl border-4 border-white transform transition-transform group-hover:scale-[1.02] duration-500">
-                                            <img src="/qook-app-preferences-setup.png" alt="Preferences Setup" className="w-full h-auto" />
+                                            <img src={`${import.meta.env.BASE_URL}Preferences.png`} alt="Preferences Setup" className="w-full h-auto" />
                                         </div>
                                         {/* Decorative elements */}
                                         <div className="absolute -inset-4 bg-orange-100 rounded-full blur-2xl opacity-40 -z-10"></div>
@@ -273,8 +325,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSkipAuth }) => {
                                     </p>
                                 </div>
                                 <div className="flex-grow flex justify-center perspective-1000 relative z-10">
-                                    <div className="w-[280px] rounded-[2.5rem] bg-gray-800 border-8 border-gray-800 shadow-2xl overflow-hidden relative transform rotate-1 hover:rotate-0 transition-transform duration-500">
-                                        <img src={`${import.meta.env.BASE_URL}qook-app-mobile-view.png`} className="w-full h-full object-cover" alt="Mobile App" />
+                                    <div className="w-[220px] h-[450px] rounded-[2.5rem] bg-gray-800 border-[6px] border-gray-700 shadow-2xl overflow-hidden relative transform rotate-1 hover:rotate-0 transition-transform duration-500">
+                                        <img src={`${import.meta.env.BASE_URL}qook-app-mobile-view.png`} className="w-full h-full object-contain bg-white" alt="Mobile App" />
                                     </div>
                                 </div>
                                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-blue-500/20 rounded-full blur-3xl -z-0"></div>
