@@ -64,7 +64,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSkipAuth }) => {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-20">
                         <div className="flex items-center gap-2">
-                            <img src="/QookCommander-home-cook-management-app-logo.png" alt="QookCommander Logo" className="h-10 w-auto" />
+                            <img src={`${import.meta.env.BASE_URL}QookCommander-home-cook-management-app-logo.png`} alt="QookCommander Logo" className="h-10 w-auto" />
                         </div>
 
                         {/* Desktop Menu */}
@@ -202,7 +202,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSkipAuth }) => {
                                             <div className="bg-gray-900/50 px-4 py-2 flex justify-between items-center text-xs text-gray-400 border-b border-gray-700">
                                                 <span>Hindi Plan</span>
                                             </div>
-                                            <img src="/qook-app-weekly-meal-planner.png" alt="Hindi Meal Plan" className="w-full h-auto blur-[1px] hover:blur-none transition-all" />
+                                            <img src={`${import.meta.env.BASE_URL}qook-app-weekly-meal-planner.png`} alt="Hindi Meal Plan" className="w-full h-auto blur-[1px] hover:blur-none transition-all" />
                                         </div>
                                     </div>
 
@@ -217,7 +217,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSkipAuth }) => {
                                                 </div>
                                                 <span className="text-xs text-gray-400 font-mono ml-4">weekly_plan_final.qook</span>
                                             </div>
-                                            <img src="/qook-app-weekly-meal-planner.png" alt="English Meal Plan" className="w-full h-auto" />
+                                            <img src={`${import.meta.env.BASE_URL}qook-app-weekly-meal-planner.png`} alt="English Meal Plan" className="w-full h-auto" />
                                         </div>
                                     </div>
                                 </div>
@@ -237,10 +237,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSkipAuth }) => {
                                 </div>
                                 <div className="relative flex-grow flex items-end justify-center min-h-[300px] overflow-hidden rounded-2xl bg-gray-50 pt-8">
                                     {/* Desktop List */}
-                                    <img src="/qook-app-grocery-shopping-list.png" className="w-[80%] rounded-t-xl shadow-lg border border-gray-200 transform translate-y-2" alt="Grocery List" />
+                                    <img src={`${import.meta.env.BASE_URL}qook-app-grocery-shopping-list.png`} className="w-[80%] rounded-t-xl shadow-lg border border-gray-200 transform translate-y-2" alt="Grocery List" />
                                     {/* Share Card Overlay */}
                                     <div className="absolute bottom-8 right-4 w-1/2 transform rotate-6 shadow-2xl rounded-lg overflow-hidden border border-gray-200">
-                                        <img src="/qook-app-share-plan-card.png" className="w-full" alt="Share Card" />
+                                        <img src={`${import.meta.env.BASE_URL}qook-app-share-plan-card.png`} className="w-full" alt="Share Card" />
                                     </div>
                                 </div>
                             </div>
@@ -256,8 +256,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSkipAuth }) => {
                                 </div>
                                 <div className="flex-grow flex justify-center perspective-1000 relative z-10">
                                     <div className="w-[280px] rounded-[2.5rem] bg-gray-800 border-8 border-gray-800 shadow-2xl overflow-hidden relative transform rotate-1 hover:rotate-0 transition-transform duration-500">
-                                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-gray-800 rounded-b-xl z-20"></div>
-                                        <img src="/qook-app-mobile-view.png" className="w-full h-full object-cover" alt="Mobile App" />
+                                        <img src={`${import.meta.env.BASE_URL}qook-app-mobile-view.png`} className="w-full h-full object-cover" alt="Mobile App" />
                                     </div>
                                 </div>
                                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-blue-500/20 rounded-full blur-3xl -z-0"></div>
@@ -315,7 +314,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSkipAuth }) => {
                 <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6">
                     <div className="flex flex-col items-center md:items-start gap-4">
                         <div className="flex items-center gap-2">
-                            <img src="/QookCommander-home-cook-management-app-logo.png" alt="QookCommander Logo" className="w-10 h-10" />
+                            <img src={`${import.meta.env.BASE_URL}QookCommander-home-cook-management-app-logo.png`} alt="QookCommander Logo" className="w-10 h-10" />
                             <span className="text-xl font-bold tracking-tight text-gray-900">QookCommander</span>
                         </div>
                         <div className="text-sm text-gray-500 space-y-1 text-center md:text-left">
