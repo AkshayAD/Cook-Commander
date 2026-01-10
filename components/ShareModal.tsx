@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { X, Share2, Download, Copy, Phone, Loader2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { X, Share2, Download, Copy, Phone, Loader2, Globe } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { WeeklyPlan, GroceryItem } from '../types';
 import ShareableCard from './ShareableCard';
@@ -14,6 +14,7 @@ interface ShareModalProps {
 
 const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, type, data, dateRange }) => {
     const [loading, setLoading] = useState(false);
+    const [language, setLanguage] = useState<'en' | 'hi'>('en');
 
     const cookName = localStorage.getItem('cook_name');
     const cookNumber = localStorage.getItem('cook_number');
@@ -21,13 +22,12 @@ const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, type, data, da
     if (!isOpen) return null;
 
     const generateImage = async (): Promise<Blob | null> => {
-        // Use the hidden capture element (fixed size for consistent screenshots)
         const element = document.getElementById('share-capture-container');
         if (!element) return null;
 
         try {
             const canvas = await html2canvas(element, {
-                scale: 2, // Retina quality
+                scale: 2,
                 backgroundColor: '#ffffff',
                 useCORS: true,
                 logging: false,
@@ -47,13 +47,13 @@ const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, type, data, da
             return;
         }
 
-        const file = new File([blob], `cook-commander-${type}-${dateRange.replace(/\s/g, '-')}.png`, { type: 'image/png' });
+        const file = new File([blob], `qookcommander-${type}-${dateRange.replace(/\s/g, '-')}.png`, { type: 'image/png' });
 
         if (navigator.share && navigator.canShare({ files: [file] })) {
             try {
                 await navigator.share({
                     files: [file],
-                    title: 'Cook Commander Plan',
+                    title: 'QookCommander Plan',
                     text: `Here is the ${type === 'plan' ? 'Meal Plan' : 'Grocery List'} for ${dateRange}.`
                 });
             } catch (err) {
@@ -76,7 +76,7 @@ const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, type, data, da
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = `cook-commander-${type}-${dateRange.replace(/\s/g, '-')}.png`;
+        link.download = `qookcommander-${type}-${dateRange.replace(/\s/g, '-')}.png`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -118,7 +118,6 @@ const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, type, data, da
 
         const file = new File([blob], `plan.png`, { type: 'image/png' });
 
-        // Try native share (works on mobile with WhatsApp installed)
         if (navigator.share && navigator.canShare({ files: [file] })) {
             try {
                 await navigator.share({
@@ -133,7 +132,6 @@ const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, type, data, da
             }
         }
 
-        // Fallback logic for Desktop/No-Share support
         try {
             await navigator.clipboard.write([
                 new ClipboardItem({ 'image/png': blob })
@@ -151,13 +149,13 @@ const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, type, data, da
 
     return (
         <>
-            {/* Hidden Capture Element - Fixed size for consistent screenshots */}
+            {/* Hidden Capture Element */}
             <div
                 className="fixed -left-[9999px] top-0 pointer-events-none"
                 aria-hidden="true"
             >
                 <div id="share-capture-container">
-                    <ShareableCard type={type} data={data} dateRange={dateRange} forCapture={true} />
+                    <ShareableCard type={type} data={data} dateRange={dateRange} forCapture={true} language={language} />
                 </div>
             </div>
 
@@ -174,22 +172,36 @@ const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, type, data, da
                             <Share2 className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" />
                             Share {type === 'plan' ? 'Meal Plan' : 'Grocery List'}
                         </h3>
-                        <button
-                            onClick={onClose}
-                            className="p-1.5 sm:p-2 hover:bg-gray-200 rounded-full text-gray-500 transition-colors"
-                        >
-                            <X className="w-5 h-5 sm:w-6 sm:h-6" />
-                        </button>
+                        
+                        {/* Language Toggle */}
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => setLanguage(language === 'en' ? 'hi' : 'en')}
+                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
+                                    language === 'hi' 
+                                        ? 'bg-orange-100 text-orange-700 border border-orange-200' 
+                                        : 'bg-gray-100 text-gray-600 border border-gray-200'
+                                }`}
+                            >
+                                <Globe className="w-3.5 h-3.5" />
+                                {language === 'en' ? 'English' : 'हिंदी'}
+                            </button>
+                            <button
+                                onClick={onClose}
+                                className="p-1.5 sm:p-2 hover:bg-gray-200 rounded-full text-gray-500 transition-colors"
+                            >
+                                <X className="w-5 h-5 sm:w-6 sm:h-6" />
+                            </button>
+                        </div>
                     </div>
 
-                    {/* Scrollable Content Area - Full vertical scroll for image */}
+                    {/* Scrollable Content Area */}
                     <div
                         className="flex-1 overflow-y-auto overflow-x-hidden p-3 sm:p-6 bg-gray-100 overscroll-contain"
                         style={{ WebkitOverflowScrolling: 'touch' }}
                     >
-                        {/* Preview Card - Scrollable */}
                         <div className="shadow-2xl rounded-sm overflow-visible mx-auto max-w-[500px]">
-                            <ShareableCard type={type} data={data} dateRange={dateRange} forCapture={false} />
+                            <ShareableCard type={type} data={data} dateRange={dateRange} forCapture={false} language={language} />
                         </div>
                     </div>
 
@@ -250,3 +262,4 @@ const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, type, data, da
 };
 
 export default ShareModal;
+

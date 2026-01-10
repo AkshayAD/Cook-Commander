@@ -520,13 +520,20 @@ function App() {
       {/* Header */}
       <header className="bg-white shadow-sm sticky top-0 z-30 shrink-0">
         <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-          {/* Left: Logo */}
-          <div className="flex items-center gap-2">
-            <div className="bg-orange-500 p-2 rounded-lg">
+          {/* Left: Logo - Clickable Home */}
+          <a
+            href="/"
+            className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+            title="Go to Home"
+          >
+            <div className="bg-orange-500 p-2 rounded-lg relative">
               <ChefHat className="text-white w-6 h-6" />
+              {user && (
+                <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-white" title="Logged In"></span>
+              )}
             </div>
             <h1 className="text-xl font-bold text-gray-800 tracking-tight hidden sm:block">QookCommander</h1>
-          </div>
+          </a>
 
           {/* Right: Actions */}
           <div className="flex items-center gap-1 sm:gap-2">

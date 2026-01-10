@@ -100,6 +100,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSkipAuth }) => {
                 {isMobileMenuOpen && (
                     <div className="md:hidden bg-white border-t border-gray-100 py-4 px-4 flex flex-col gap-4 shadow-xl">
                         <a href="#features" onClick={() => setIsMobileMenuOpen(false)} className="text-base font-medium text-gray-700 py-2">Features</a>
+                        <a href="#how-it-works" onClick={() => setIsMobileMenuOpen(false)} className="text-base font-medium text-gray-700 py-2">How it works</a>
                         <button onClick={() => { openAuth('signin'); setIsMobileMenuOpen(false); }} className="text-left text-base font-medium text-gray-700 py-2">Log in</button>
                         <button onClick={() => { openAuth('signup'); setIsMobileMenuOpen(false); }} className="btn-primary w-full py-3 bg-orange-600 text-white rounded-lg font-bold">Get Started</button>
                     </div>
@@ -152,7 +153,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSkipAuth }) => {
                 </div>
 
                 {/* How It Works - Visual Flow Section */}
-                <div className="mt-32 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div id="how-it-works" className="mt-32 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-24">
                     <div className="relative">
                         <div className="text-center mb-16">
                             <span className="text-orange-600 font-bold tracking-wide uppercase text-sm">See It In Action</span>
