@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChefHat, ArrowRight, CheckCircle2, Star, Sparkles, Mail, Lock, Eye, EyeOff, Loader2, AlertTriangle, Menu, X } from 'lucide-react';
+import { ChefHat, ArrowRight, CheckCircle2, Star, Sparkles, Loader2, AlertTriangle, Menu, X } from 'lucide-react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
 interface LandingPageProps {
@@ -12,40 +12,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSkipAuth }) => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     // Auth State
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [message, setMessage] = useState<string | null>(null);
-
-    const handleEmailAuth = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
-        setError(null);
-        setMessage(null);
-
-        try {
-            if (authMode === 'signup') {
-                const { error } = await supabase!.auth.signUp({
-                    email,
-                    password,
-                });
-                if (error) throw error;
-                setMessage('Check your email for a confirmation link!');
-            } else {
-                const { error } = await supabase!.auth.signInWithPassword({
-                    email,
-                    password,
-                });
-                if (error) throw error;
-            }
-        } catch (err: any) {
-            setError(err.message || 'An error occurred');
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const handleGoogleAuth = async () => {
         setLoading(true);
@@ -68,7 +36,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSkipAuth }) => {
         setAuthMode(mode);
         setIsAuthModalOpen(true);
         setError(null);
-        setMessage(null);
     };
 
     // Config Check
@@ -383,88 +350,28 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSkipAuth }) => {
                     <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md relative z-10 overflow-hidden animate-scale-in">
                         <div className="p-8">
                             <div className="text-center mb-8">
-                                <h2 className="text-2xl font-bold text-gray-900">{authMode === 'signin' ? 'Welcome Back' : 'Create Account'}</h2>
-                                <p className="text-gray-500 text-sm mt-1">{authMode === 'signin' ? 'Enter your details to sign in' : 'Start your journey today'}</p>
+                                <h2 className="text-2xl font-bold text-gray-900">Welcome to QookCommander</h2>
+                                <p className="text-gray-500 text-sm mt-1">Sign in with your Google account to get started</p>
                             </div>
 
                             <div className="space-y-4">
                                 <button
                                     onClick={handleGoogleAuth}
                                     disabled={loading}
-                                    className="w-full py-3 px-4 bg-white border border-gray-200 rounded-xl font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all flex items-center justify-center gap-3"
+                                    className="w-full py-4 px-4 bg-white border-2 border-gray-200 rounded-xl font-bold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all flex items-center justify-center gap-3 shadow-sm hover:shadow-md"
                                 >
-                                    <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-5 h-5" alt="Google" />
-                                    Continue with Google
+                                    {loading ? (
+                                        <Loader2 className="w-5 h-5 animate-spin" />
+                                    ) : (
+                                        <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-5 h-5" alt="Google" />
+                                    )}
+                                    {loading ? 'Signing In...' : 'Continue with Google'}
                                 </button>
 
-                                <div className="relative flex py-2 items-center">
-                                    <div className="flex-grow border-t border-gray-200"></div>
-                                    <span className="flex-shrink-0 mx-4 text-gray-400 text-xs uppercase font-medium">Or with email</span>
-                                    <div className="flex-grow border-t border-gray-200"></div>
-                                </div>
-
-                                <form onSubmit={handleEmailAuth} className="space-y-4">
-                                    <div className="space-y-1">
-                                        <label className="text-xs font-semibold text-gray-700 ml-1">Email</label>
-                                        <div className="relative">
-                                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                                            <input
-                                                type="email"
-                                                value={email}
-                                                onChange={(e) => setEmail(e.target.value)}
-                                                required
-                                                className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all text-sm font-medium"
-                                                placeholder="hello@example.com"
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-1">
-                                        <label className="text-xs font-semibold text-gray-700 ml-1">Password</label>
-                                        <div className="relative">
-                                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                                            <input
-                                                type={showPassword ? 'text' : 'password'}
-                                                value={password}
-                                                onChange={(e) => setPassword(e.target.value)}
-                                                required
-                                                className="w-full pl-10 pr-10 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all text-sm font-medium"
-                                                placeholder="••••••••"
-                                            />
-                                            <button
-                                                type="button"
-                                                onClick={() => setShowPassword(!showPassword)}
-                                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                                            >
-                                                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    {error && <div className="p-3 bg-red-50 text-red-600 text-sm rounded-lg border border-red-100">{error}</div>}
-                                    {message && <div className="p-3 bg-green-50 text-green-600 text-sm rounded-lg border border-green-100">{message}</div>}
-
-                                    <button
-                                        type="submit"
-                                        disabled={loading}
-                                        className="w-full py-3 bg-gray-900 text-white rounded-xl font-bold hover:bg-gray-800 transition-all shadow-lg hover:shadow-xl disabled:opacity-70 flex items-center justify-center gap-2"
-                                    >
-                                        {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-                                        {authMode === 'signin' ? 'Sign In' : 'Create Account'}
-                                    </button>
-                                </form>
+                                {error && <div className="p-3 bg-red-50 text-red-600 text-sm rounded-lg border border-red-100">{error}</div>}
                             </div>
                         </div>
 
-                        <div className="p-4 bg-gray-50 text-center text-sm">
-                            <span className="text-gray-500">{authMode === 'signin' ? "Don't have an account?" : "Already have an account?"}</span>
-                            <button
-                                onClick={() => openAuth(authMode === 'signin' ? 'signup' : 'signin')}
-                                className="ml-2 font-bold text-orange-600 hover:underline"
-                            >
-                                {authMode === 'signin' ? 'Sign up' : 'Log in'}
-                            </button>
-                        </div>
                     </div>
                 </div>
             )}
