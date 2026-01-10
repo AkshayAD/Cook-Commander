@@ -54,7 +54,7 @@ export default function SettingsModal({ onClose, canClose }: SettingsModalProps)
                 <div className="p-4 sm:p-6 space-y-6 flex-1 overflow-y-auto overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
                     {!canClose && (
                         <div className="bg-amber-50 text-amber-800 p-3 rounded-lg text-sm border border-amber-200">
-                            Please configure your Gemini API Key to continue using Cook Commander.
+                            Please configure your Gemini API Key to continue using QookCommander.
                         </div>
                     )}
 
