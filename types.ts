@@ -21,6 +21,8 @@ export interface GroceryItem {
 
 export interface UserPreferences {
   dietaryType: string;
+  dietaryTypes?: string[]; // Multi-select: Veg, Veg + Eggs, Non-Veg
+  dietaryDetails?: string; // Free text for more details
   allergies: string[];
   dislikes: string[];
   breakfastPreferences: string[];
@@ -30,6 +32,8 @@ export interface UserPreferences {
   pantryStaples: string[];
   mealsToPrepare?: ('breakfast' | 'lunch' | 'dinner')[];
   nonVegPreferences?: string[];
+  language?: 'English' | 'Hindi';
+  quickCookInstructions?: string[]; // Quick default toggles
 }
 
 export interface PreferenceProfile extends UserPreferences {

@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { UserPreferences, PreferenceProfile, MealHistoryEntry } from '../types';
 import { parsePreferencesFromText, optimizePreferencesFromHistory, getLearningSuggestions, LearningSuggestions } from '../services/geminiService';
 import { useSettings } from '../contexts/SettingsContext';
-import { X, Wand2, Save, History, Plus, User, Coffee, Sun, Moon, AlertCircle, Check, ThumbsUp, ThumbsDown, Trash2, ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
+import { X, Wand2, Save, History, Plus, User, Coffee, Sun, Moon, AlertCircle, Check, ThumbsUp, ThumbsDown, Trash2, ChevronDown, ChevronUp, Sparkles, Globe } from 'lucide-react';
+import { QUICK_COOK_INSTRUCTION_OPTIONS } from '../constants';
 
 interface Props {
     profiles: PreferenceProfile[];
@@ -393,13 +394,36 @@ const PreferencesModal: React.FC<Props> = ({ profiles, currentProfileId, history
                         <div className="p-3 sm:p-6 overflow-y-auto flex-1 bg-white overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
                             <div className="max-w-3xl">
                                 {activeTab === 'general' && (
-                                    <div className="space-y-6 animate-in fade-in duration-200">
+                                    <div className="space-y-5 animate-in fade-in duration-200">
+                                        {/* Language Toggle */}
+                                        <div className="flex items-center justify-between p-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl">
+                                            <div className="flex items-center gap-2">
+                                                <Globe className="w-4 h-4 text-blue-600" />
+                                                <span className="text-sm font-bold text-blue-800">Menu & Grocery Language</span>
+                                            </div>
+                                            <div className="flex gap-1">
+                                                {(['English', 'Hindi'] as const).map((lang) => (
+                                                    <button
+                                                        key={lang}
+                                                        type="button"
+                                                        onClick={() => setLocalPrefs(prev => ({ ...prev, language: lang }))}
+                                                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${(localPrefs.language ?? 'English') === lang
+                                                                ? 'bg-blue-600 text-white'
+                                                                : 'bg-white text-blue-700 hover:bg-blue-100'
+                                                            }`}
+                                                    >
+                                                        {lang === 'Hindi' ? 'हिंदी' : lang}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+
                                         {/* Meals to Prepare */}
                                         <div>
-                                            <label className="block text-sm font-bold text-gray-700 mb-3">Meals to Prepare</label>
-                                            <div className="flex flex-wrap gap-3">
+                                            <label className="block text-sm font-bold text-gray-700 mb-2">Meals to Prepare</label>
+                                            <div className="flex flex-wrap gap-2">
                                                 {(['breakfast', 'lunch', 'dinner'] as const).map((meal) => (
-                                                    <label key={meal} className="flex items-center gap-2 px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-100 transition-colors">
+                                                    <label key={meal} className="flex items-center gap-2 px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-100 transition-colors">
                                                         <input
                                                             type="checkbox"
                                                             checked={localPrefs.mealsToPrepare?.includes(meal) ?? true}
@@ -419,37 +443,54 @@ const PreferencesModal: React.FC<Props> = ({ profiles, currentProfileId, history
                                             </div>
                                         </div>
 
-                                        {/* Food Preference */}
+                                        {/* Food Preference - Multi-select */}
                                         <div>
-                                            <label className="block text-sm font-bold text-gray-700 mb-3">Food Preference</label>
-                                            <div className="flex flex-wrap gap-2">
+                                            <label className="block text-sm font-bold text-gray-700 mb-2">Food Preference (Multi-select)</label>
+                                            <div className="flex flex-wrap gap-2 mb-2">
                                                 {[
                                                     { value: 'Vegetarian', label: 'Veg' },
                                                     { value: 'Vegetarian (with Eggs)', label: 'Veg + Eggs' },
                                                     { value: 'Non-Vegetarian', label: 'Non-Veg' }
-                                                ].map((opt) => (
-                                                    <button
-                                                        key={opt.value}
-                                                        type="button"
-                                                        onClick={() => handleChange('dietaryType', opt.value)}
-                                                        className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${localPrefs.dietaryType === opt.value
-                                                                ? 'bg-indigo-600 text-white'
-                                                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                                            }`}
-                                                    >
-                                                        {opt.label}
-                                                    </button>
-                                                ))}
+                                                ].map((opt) => {
+                                                    const selected = localPrefs.dietaryTypes?.includes(opt.value) ?? (opt.value === 'Vegetarian');
+                                                    return (
+                                                        <button
+                                                            key={opt.value}
+                                                            type="button"
+                                                            onClick={() => {
+                                                                const current = localPrefs.dietaryTypes ?? ['Vegetarian'];
+                                                                if (selected) {
+                                                                    if (current.length > 1) {
+                                                                        setLocalPrefs(prev => ({ ...prev, dietaryTypes: current.filter(v => v !== opt.value), dietaryType: current.filter(v => v !== opt.value)[0] || 'Vegetarian' }));
+                                                                    }
+                                                                } else {
+                                                                    setLocalPrefs(prev => ({ ...prev, dietaryTypes: [...current, opt.value], dietaryType: opt.value }));
+                                                                }
+                                                            }}
+                                                            className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${selected ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                                                }`}
+                                                        >
+                                                            {opt.label}
+                                                        </button>
+                                                    );
+                                                })}
                                             </div>
+                                            <input
+                                                type="text"
+                                                value={localPrefs.dietaryDetails ?? ''}
+                                                onChange={(e) => setLocalPrefs(prev => ({ ...prev, dietaryDetails: e.target.value }))}
+                                                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+                                                placeholder="More details (e.g., Jain, No onion/garlic)..."
+                                            />
                                         </div>
 
                                         {/* Non-Veg Preferences (conditional) */}
-                                        {localPrefs.dietaryType === 'Non-Vegetarian' && (
-                                            <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl">
-                                                <label className="block text-sm font-bold text-amber-800 mb-3">What Non-Veg Options Work?</label>
+                                        {(localPrefs.dietaryTypes?.includes('Non-Vegetarian') || localPrefs.dietaryType === 'Non-Vegetarian') && (
+                                            <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl">
+                                                <label className="block text-sm font-bold text-amber-800 mb-2">Non-Veg Options</label>
                                                 <div className="flex flex-wrap gap-2">
                                                     {['Chicken', 'Mutton', 'Fish', 'Prawns', 'Crabs', 'Eggs'].map((item) => (
-                                                        <label key={item} className="flex items-center gap-2 px-3 py-2 bg-white border border-amber-200 rounded-lg cursor-pointer hover:bg-amber-100 transition-colors">
+                                                        <label key={item} className="flex items-center gap-2 px-3 py-1.5 bg-white border border-amber-200 rounded-lg cursor-pointer hover:bg-amber-100 transition-colors">
                                                             <input
                                                                 type="checkbox"
                                                                 checked={localPrefs.nonVegPreferences?.includes(item) ?? false}
@@ -470,24 +511,101 @@ const PreferencesModal: React.FC<Props> = ({ profiles, currentProfileId, history
                                             </div>
                                         )}
 
+                                        {/* Dislikes - Editable Checkbox List */}
                                         <div>
-                                            <label className="block text-sm font-bold text-gray-700 mb-2">Dislikes / Restrictions</label>
-                                            <textarea
-                                                value={localPrefs.dislikes.join(', ')}
-                                                onChange={(e) => handleChange('dislikes', e.target.value)}
-                                                className="w-full p-3 bg-gray-50 border-gray-200 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-black font-medium"
-                                                rows={3}
-                                                placeholder="Comma separated values e.g., Mushrooms, Brinjal"
-                                            />
+                                            <label className="block text-sm font-bold text-gray-700 mb-2">Dislikes / Restrictions ({localPrefs.dislikes.length})</label>
+                                            <div className="space-y-1 max-h-32 overflow-y-auto border border-gray-200 rounded-xl p-2 bg-gray-50 mb-2">
+                                                {localPrefs.dislikes.map((item, idx) => (
+                                                    <div key={idx} className="flex items-center gap-2 p-1.5 bg-white rounded-lg border border-gray-100 group">
+                                                        <input type="checkbox" checked={true} onChange={() => {
+                                                            setLocalPrefs(prev => ({ ...prev, dislikes: prev.dislikes.filter((_, i) => i !== idx) }));
+                                                        }} className="w-4 h-4 text-red-600 rounded focus:ring-red-500" />
+                                                        <span className="flex-1 text-sm text-gray-800">{item}</span>
+                                                        <button onClick={() => setLocalPrefs(prev => ({ ...prev, dislikes: prev.dislikes.filter((_, i) => i !== idx) }))} className="p-1 text-gray-400 hover:text-red-500"><Trash2 className="w-3 h-3" /></button>
+                                                    </div>
+                                                ))}
+                                                {localPrefs.dislikes.length === 0 && <p className="text-center text-gray-400 text-xs py-2">No dislikes added</p>}
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <input type="text" id="newDislike" className="flex-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500" placeholder="Add dislike..." onKeyDown={(e) => {
+                                                    if (e.key === 'Enter' && (e.target as HTMLInputElement).value.trim()) {
+                                                        setLocalPrefs(prev => ({ ...prev, dislikes: [...prev.dislikes, (e.target as HTMLInputElement).value.trim()] }));
+                                                        (e.target as HTMLInputElement).value = '';
+                                                    }
+                                                }} />
+                                                <button onClick={() => {
+                                                    const input = document.getElementById('newDislike') as HTMLInputElement;
+                                                    if (input.value.trim()) {
+                                                        setLocalPrefs(prev => ({ ...prev, dislikes: [...prev.dislikes, input.value.trim()] }));
+                                                        input.value = '';
+                                                    }
+                                                }} className="px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"><Plus className="w-4 h-4" /></button>
+                                            </div>
                                         </div>
+
+                                        {/* Quick Cook Instructions (Toggles - Unticked by default) */}
                                         <div>
-                                            <label className="block text-sm font-bold text-gray-700 mb-2">Special Instructions for Cook</label>
-                                            <textarea
-                                                value={localPrefs.specialInstructions}
-                                                onChange={(e) => handleChange('specialInstructions', e.target.value)}
-                                                className="w-full p-3 bg-gray-50 border-gray-200 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-black font-medium"
-                                                rows={4}
-                                            />
+                                            <label className="block text-sm font-bold text-gray-700 mb-2">Quick Cook Guidelines</label>
+                                            <div className="space-y-1 max-h-40 overflow-y-auto border border-gray-200 rounded-xl p-2 bg-gray-50">
+                                                {QUICK_COOK_INSTRUCTION_OPTIONS.map((instruction) => (
+                                                    <label key={instruction} className="flex items-center gap-2 p-2 bg-white rounded-lg border border-gray-100 cursor-pointer hover:bg-gray-50">
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={localPrefs.quickCookInstructions?.includes(instruction) ?? false}
+                                                            onChange={(e) => {
+                                                                const current = localPrefs.quickCookInstructions ?? [];
+                                                                if (e.target.checked) {
+                                                                    setLocalPrefs(prev => ({ ...prev, quickCookInstructions: [...current, instruction] }));
+                                                                } else {
+                                                                    setLocalPrefs(prev => ({ ...prev, quickCookInstructions: current.filter(i => i !== instruction) }));
+                                                                }
+                                                            }}
+                                                            className="w-4 h-4 text-green-600 rounded focus:ring-green-500"
+                                                        />
+                                                        <span className="text-sm text-gray-700">{instruction}</span>
+                                                    </label>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {/* Special Instructions - Editable Checkbox List */}
+                                        <div>
+                                            <label className="block text-sm font-bold text-gray-700 mb-2">Custom Instructions for Cook</label>
+                                            <div className="space-y-1 max-h-28 overflow-y-auto border border-gray-200 rounded-xl p-2 bg-gray-50 mb-2">
+                                                {localPrefs.specialInstructions.split('\n').filter(Boolean).map((item, idx) => (
+                                                    <div key={idx} className="flex items-center gap-2 p-1.5 bg-white rounded-lg border border-gray-100 group">
+                                                        <input type="checkbox" checked={true} onChange={() => {
+                                                            const lines = localPrefs.specialInstructions.split('\n').filter(Boolean);
+                                                            lines.splice(idx, 1);
+                                                            setLocalPrefs(prev => ({ ...prev, specialInstructions: lines.join('\n') }));
+                                                        }} className="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500" />
+                                                        <span className="flex-1 text-sm text-gray-800">{item}</span>
+                                                        <button onClick={() => {
+                                                            const lines = localPrefs.specialInstructions.split('\n').filter(Boolean);
+                                                            lines.splice(idx, 1);
+                                                            setLocalPrefs(prev => ({ ...prev, specialInstructions: lines.join('\n') }));
+                                                        }} className="p-1 text-gray-400 hover:text-red-500"><Trash2 className="w-3 h-3" /></button>
+                                                    </div>
+                                                ))}
+                                                {!localPrefs.specialInstructions.trim() && <p className="text-center text-gray-400 text-xs py-2">No custom instructions</p>}
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <input type="text" id="newInstruction" className="flex-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500" placeholder="Add custom instruction..." onKeyDown={(e) => {
+                                                    if (e.key === 'Enter' && (e.target as HTMLInputElement).value.trim()) {
+                                                        const newLine = (e.target as HTMLInputElement).value.trim();
+                                                        setLocalPrefs(prev => ({ ...prev, specialInstructions: prev.specialInstructions ? prev.specialInstructions + '\n' + newLine : newLine }));
+                                                        (e.target as HTMLInputElement).value = '';
+                                                    }
+                                                }} />
+                                                <button onClick={() => {
+                                                    const input = document.getElementById('newInstruction') as HTMLInputElement;
+                                                    if (input.value.trim()) {
+                                                        const newLine = input.value.trim();
+                                                        setLocalPrefs(prev => ({ ...prev, specialInstructions: prev.specialInstructions ? prev.specialInstructions + '\n' + newLine : newLine }));
+                                                        input.value = '';
+                                                    }
+                                                }} className="px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"><Plus className="w-4 h-4" /></button>
+                                            </div>
                                         </div>
                                     </div>
                                 )}

@@ -100,7 +100,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSkipAuth }) => {
                             <div className="bg-gradient-to-br from-orange-500 to-red-500 p-2 rounded-xl text-white shadow-lg shadow-orange-500/20">
                                 <ChefHat className="w-6 h-6" />
                             </div>
-                            <span className="text-xl font-bold tracking-tight text-gray-900">Qook</span>
+                            <span className="text-xl font-bold tracking-tight text-gray-900">QookCommander</span>
                         </div>
 
                         {/* Desktop Menu */}
@@ -158,7 +158,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSkipAuth }) => {
                     </h1>
 
                     <p className="max-w-2xl mx-auto text-xl text-gray-600 mb-10 leading-relaxed">
-                        Stop worrying about "what's for dinner". Qook generates personalized weekly meal plans and organized grocery lists in seconds.
+                        Stop worrying about "what's for dinner". QookCommander generates personalized weekly meal plans and organized grocery lists in seconds. The ultimate AI home cook management tool.
                     </p>
 
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -184,6 +184,37 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSkipAuth }) => {
                                 <span className="font-semibold text-gray-700">{stat}</span>
                             </div>
                         ))}
+                    </div>
+                </div>
+
+                {/* Screenshots Section */}
+                <div className="mt-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="relative rounded-2xl bg-gray-900 p-2 sm:p-4 shadow-2xl overflow-hidden ring-1 ring-white/10">
+                        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-orange-500/20 to-purple-500/20 opacity-50"></div>
+                        <div className="grid md:grid-cols-2 gap-4 relative z-10">
+                            <div className="rounded-xl overflow-hidden shadow-lg border border-gray-800 bg-gray-900">
+                                <div className="bg-gray-800 px-4 py-2 flex items-center gap-2 border-b border-gray-700">
+                                    <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                                    <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                                    <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                                    <span className="text-xs text-gray-400 font-mono ml-2">weekly_plan.qook</span>
+                                </div>
+                                <img src="/screenshot-planner.png" alt="Qook Meal Planner" className="w-full h-auto opacity-90 hover:opacity-100 transition-opacity" />
+                            </div>
+                            <div className="rounded-xl overflow-hidden shadow-lg border border-gray-800 bg-gray-900">
+                                <div className="bg-gray-800 px-4 py-2 flex items-center gap-2 border-b border-gray-700">
+                                    <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                                    <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                                    <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                                    <span className="text-xs text-gray-400 font-mono ml-2">grocery_list.qook</span>
+                                </div>
+                                <img src="/screenshot-grocery.png" alt="Smart Grocery List" className="w-full h-auto opacity-90 hover:opacity-100 transition-opacity" />
+                            </div>
+                        </div>
+                        {/* Share Preview Overlay */}
+                        <div className="hidden lg:block absolute bottom-4 -right-12 w-1/3 rounded-xl overflow-hidden shadow-2xl border border-gray-700 bg-gray-900 transform rotate-[-5deg] hover:rotate-0 transition-transform duration-500">
+                            <img src="/share-preview.png" alt="Share Meal Plan" className="w-full h-auto opacity-95" />
+                        </div>
                     </div>
                 </div>
             </section>
@@ -219,7 +250,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSkipAuth }) => {
                 <div className="max-w-5xl mx-auto px-4 relative z-10 bg-gray-900 rounded-3xl p-12 md:p-20 text-center shadow-2xl overflow-hidden">
                     <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-orange-500 rounded-full blur-[100px] opacity-20 translate-x-1/2 -translate-y-1/2"></div>
                     <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">Ready to take control?</h2>
-                    <p className="text-gray-400 text-lg mb-10 max-w-2xl mx-auto">Join thousands of home cooks who are saving time and eating better with Qook.</p>
+                    <p className="text-gray-400 text-lg mb-10 max-w-2xl mx-auto">Join thousands of home cooks who are saving time and eating better with QookCommander.</p>
 
                     <button
                         onClick={() => openAuth('signup')}
@@ -235,9 +266,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSkipAuth }) => {
                 <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6">
                     <div className="flex items-center gap-2 opacity-70">
                         <ChefHat className="w-5 h-5" />
-                        <span className="font-bold">Qook</span>
+                        <span className="font-bold">QookCommander</span>
                     </div>
-                    <p className="text-gray-500 text-sm">© {new Date().getFullYear()} Qook. All rights reserved.</p>
+                    <p className="text-gray-500 text-sm">© {new Date().getFullYear()} QookCommander. All rights reserved.</p>
                 </div>
             </footer>
 

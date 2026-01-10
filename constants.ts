@@ -1,16 +1,28 @@
 import { UserPreferences, PreferenceProfile } from './types';
 
+// Quick cook instruction options (unticked by default)
+export const QUICK_COOK_INSTRUCTION_OPTIONS = [
+  "If Lunch is Chole/Rajma, Dinner should be lighter",
+  "Avoid deep fried items on weekdays",
+  "Keep oil/ghee usage minimal",
+  "Prefer fresh grinding over store-bought masalas",
+  "No repeat meals within a week",
+  "Include salad with every lunch",
+  "Prefer homemade paneer if available"
+];
+
 // Extracted from the provided WhatsApp chat history
 export const DEFAULT_PREFERENCES: UserPreferences = {
-  dietaryType: "Vegetarian (with Eggs)",
+  dietaryType: "Vegetarian",
+  dietaryTypes: ["Vegetarian"],
+  dietaryDetails: "",
   allergies: [],
   dislikes: [
     "Carrot Matar Sabzi",
     "Beetroot Sabzi (Only allowed in Salad)",
     "Gawar (Cluster Beans)",
     "Arbi Masala (Dry)",
-    "Mooli dishes (Only allowed in Salad)",
-    "Repeat of same meal within 2 weeks"
+    "Mooli dishes (Only allowed in Salad)"
   ],
   breakfastPreferences: [
     "Vegetable Sandwich with Cheese",
@@ -41,15 +53,14 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
     "Others: Sarson ka Saag & Makki Roti (Winter), Pav Bhaji, Wraps",
     "Sides: Raita (Boondi, Onion Tomato)"
   ],
-  specialInstructions: [
-    "Cook visits twice a day: Morning (Breakfast+Lunch), Evening (Dinner).",
-    "If Lunch is Chole/Rajma, Dinner should be lighter."
-  ].join('\n'),
+  specialInstructions: "Cook visits twice a day: Morning (Breakfast+Lunch), Evening (Dinner).",
   pantryStaples: [
     "Salt", "Sugar", "Oil", "Spices (Haldi, Mirch, Jeera, etc.)", "Wheat Flour (Atta)", "Rice"
   ],
   mealsToPrepare: ['breakfast', 'lunch', 'dinner'],
-  nonVegPreferences: []
+  nonVegPreferences: [],
+  language: 'English',
+  quickCookInstructions: []
 };
 
 // Default profile templates for new users
