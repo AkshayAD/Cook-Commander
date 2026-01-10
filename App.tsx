@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { ChefHat, ShoppingCart, Settings, RefreshCw, CalendarDays, FileText, Archive, ChevronDown, Calendar as CalendarIcon, ClipboardList, LogOut, Cpu, Share2 } from 'lucide-react';
+import { ChefHat, ShoppingCart, Settings, RefreshCw, CalendarDays, FileText, Archive, ChevronDown, Calendar as CalendarIcon, ClipboardList, LogOut, Cpu, Share2, MessageSquareHeart } from 'lucide-react';
 import { WeeklyPlan, UserPreferences, GroceryItem, PreferenceProfile, MealHistoryEntry, DayPlan, Schedule, MealTransfer } from './types';
 import { DEFAULT_PREFERENCES, DEFAULT_PROFILE_TEMPLATES } from './constants';
 import { generateWeeklyPlan, generateGroceryList, regenerateSingleMeal, smartEditMeals, generateGroceryListFromSchedule } from './services/geminiService';
@@ -17,6 +17,7 @@ import LandingPage from './components/LandingPage';
 import SettingsModal from './components/SettingsModal';
 import UserMenu from './components/UserMenu';
 import ShareModal from './components/ShareModal';
+import FeedbackModal from './components/FeedbackModal';
 import { format, addDays, parseISO, startOfWeek, endOfWeek } from 'date-fns';
 
 function App() {
@@ -41,6 +42,7 @@ function App() {
   const [scheduleHistory, setScheduleHistory] = useState<Schedule[]>([]); // For undo/revert
   const [shareModalData, setShareModalData] = useState<{ isOpen: boolean; type: 'plan' | 'grocery'; data: any; dateRange: string }>({ isOpen: false, type: 'plan', data: null, dateRange: '' });
   const [loadedWeekRange, setLoadedWeekRange] = useState<string>('');
+  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [groceryLoading, setGroceryLoading] = useState(false);
@@ -523,7 +525,7 @@ function App() {
             <div className="bg-orange-500 p-2 rounded-lg">
               <ChefHat className="text-white w-6 h-6" />
             </div>
-            <h1 className="text-xl font-bold text-gray-800 tracking-tight hidden sm:block">CookCommander</h1>
+            <h1 className="text-xl font-bold text-gray-800 tracking-tight hidden sm:block">QookCommander</h1>
           </div>
 
           {/* Right: Actions */}
@@ -551,12 +553,22 @@ function App() {
             </button>
 
             {/* Preferences */}
+            {/* Preferences */}
             <button
               onClick={() => setIsPreferencesOpen(true)}
               className="p-2.5 text-gray-600 hover:bg-gray-100 rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center"
               title="Preferences"
             >
               <Settings className="w-5 h-5" />
+            </button>
+
+            {/* Feedback */}
+            <button
+              onClick={() => setIsFeedbackOpen(true)}
+              className="p-2.5 text-gray-600 hover:bg-gray-100 rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center"
+              title="Give Feedback"
+            >
+              <MessageSquareHeart className="w-5 h-5 text-indigo-500" />
             </button>
 
             {/* Generate Plan Button */}
@@ -789,6 +801,12 @@ function App() {
           dateRange={shareModalData.dateRange}
         />
       )}
+
+      <FeedbackModal
+        isOpen={isFeedbackOpen}
+        onClose={() => setIsFeedbackOpen(false)}
+        userId={userId}
+      />
     </div>
   );
 }

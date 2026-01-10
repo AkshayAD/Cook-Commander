@@ -97,7 +97,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSkipAuth }) => {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-20">
                         <div className="flex items-center gap-2">
-                            <img src="/QookCommander-home-cook-management-app-logo.svg" alt="QookCommander Logo" className="h-10 w-auto" />
+                            <img src="/QookCommander-home-cook-management-app-logo.png" alt="QookCommander Logo" className="h-10 w-auto" />
                         </div>
 
                         {/* Desktop Menu */}
@@ -345,11 +345,28 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSkipAuth }) => {
             {/* Footer */}
             <footer className="bg-gray-50 py-12 border-t border-gray-200">
                 <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6">
-                    <div className="flex items-center gap-2">
-                        <img src="/QookCommander-home-cook-management-app-logo.svg" alt="QookCommander Logo" className="w-10 h-10" />
-                        <span className="text-xl font-bold tracking-tight text-gray-900">QookCommander</span>
+                    <div className="flex flex-col items-center md:items-start gap-4">
+                        <div className="flex items-center gap-2">
+                            <img src="/QookCommander-home-cook-management-app-logo.png" alt="QookCommander Logo" className="w-10 h-10" />
+                            <span className="text-xl font-bold tracking-tight text-gray-900">QookCommander</span>
+                        </div>
+                        <div className="text-sm text-gray-500 space-y-1 text-center md:text-left">
+                            <p>© {new Date().getFullYear()} QookCommander. All rights reserved.</p>
+                            <p>Owned by <a href="https://qook.in" className="hover:text-orange-600 transition-colors">Qook.in</a></p>
+                        </div>
                     </div>
-                    <p className="text-gray-500 text-sm">© {new Date().getFullYear()} QookCommander. All rights reserved.</p>
+
+                    <div className="flex flex-col items-center md:items-end gap-2 text-sm text-gray-600">
+                        <h4 className="font-bold text-gray-900">Contact Us</h4>
+                        <div className="flex items-center gap-2">
+                            <Mail className="w-4 h-4 text-orange-500" />
+                            <a href="mailto:akshaydewalwar1@gmail.com" className="hover:text-orange-600 transition-colors">akshaydewalwar1@gmail.com</a>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <span className="font-semibold text-orange-500">PRO</span>
+                            <span>+91 8329265013</span>
+                        </div>
+                    </div>
                 </div>
             </footer>
 

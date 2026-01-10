@@ -118,6 +118,29 @@ export default function SettingsModal({ onClose, canClose }: SettingsModalProps)
                             </p>
                         </div>
                     </div>
+
+
+                    <div className="border-t border-gray-100 my-4"></div>
+
+                    {/* Support & Contact */}
+                    <div className="space-y-4">
+                        <h4 className="font-medium text-gray-800 flex items-center gap-2">
+                            <span className="text-xl">👋</span> Need Help?
+                        </h4>
+                        <div className="bg-gray-50 rounded-xl p-4 text-sm space-y-3">
+                            <div className="flex items-center justify-between">
+                                <span className="text-gray-600">Email Support</span>
+                                <a href="mailto:akshaydewalwar1@gmail.com" className="font-medium text-indigo-600 hover:text-indigo-700">akshaydewalwar1@gmail.com</a>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <span className="text-gray-600">Pro Support</span>
+                                <span className="font-medium text-gray-800">+91 8329265013</span>
+                            </div>
+                            <div className="pt-2 text-xs text-center text-gray-400">
+                                Built with ❤️ by Qook.in
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div className="p-4 border-t border-gray-100 safe-area-inset-bottom shrink-0">
@@ -131,6 +154,6 @@ export default function SettingsModal({ onClose, canClose }: SettingsModalProps)
                     </button>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }

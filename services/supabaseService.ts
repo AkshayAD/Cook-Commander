@@ -808,3 +808,37 @@ export const deleteGroceryList = async (listId: string, userId: string): Promise
     const filtered = history.filter(list => list.id !== listId);
     localStorage.setItem(GROCERY_HISTORY_KEY, JSON.stringify(filtered));
 };
+
+// ============================================================================
+// FEEDBACK SYSTEM
+// ============================================================================
+
+export interface FeedbackData {
+    rating: number;
+    whatWorks: string;
+    whatNeedsImprovement: string;
+    suggestions: string;
+}
+
+export const submitFeedback = async (data: FeedbackData, userId: string = 'anon'): Promise<void> => {
+    if (isOfflineMode(userId) && userId !== 'anon') {
+        // Feedback requires online connection
+        throw new Error("Cannot submit feedback in offline mode");
+    }
+
+    const { error } = await supabase
+        .from('feedback')
+        .insert({
+            user_id: userId === 'anon' || userId === 'local' ? null : userId,
+            rating: data.rating,
+            what_works: data.whatWorks,
+            what_needs_improvement: data.whatNeedsImprovement,
+            suggestions: data.suggestions
+        });
+
+    if (error) {
+        console.error('Error submitting feedback:', error);
+        throw error;
+    }
+};
+
