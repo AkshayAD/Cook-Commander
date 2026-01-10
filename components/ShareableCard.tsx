@@ -70,7 +70,7 @@ const ShareableCard: React.FC<ShareableCardProps> = ({
             <div className="flex items-center justify-between mb-4 sm:mb-6 border-b border-orange-200 pb-3 sm:pb-4">
                 <div className="flex items-center gap-2 sm:gap-3">
                     <img
-                        src="/Site header logo.png"
+                        src={`${import.meta.env.BASE_URL}Site header logo.png`}
                         alt="Q"
                         className={forCapture ? "w-10 h-10 object-contain" : "w-8 h-8 sm:w-10 sm:h-10 object-contain"}
                     />

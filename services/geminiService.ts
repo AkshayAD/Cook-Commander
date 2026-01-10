@@ -739,24 +739,28 @@ export const translateMealPlanToHindi = async (
     };
 
     const prompt = `
-    Translate this meal plan to Hindi for display on a shareable menu card.
+    Translate this meal plan to Hindi (Devanagari script) for display on a shareable menu card.
     
-    IMPORTANT FORMATTING RULES:
-    1. Keep meal names SHORT and CONCISE (max 3-4 words in Hindi)
-    2. Use authentic Hindi names for Indian dishes: "Poha" → "पोहा", "Dal Tadka" → "दाल तड़का"
-    3. For longer descriptions, use ONLY the main dish name, drop extras like "with..." or "served with..."
-    4. Example transformations:
-       - "Paratha with Curd and Pickle" → "पराठा, दही, अचार"
-       - "Dal Tadka with Rice and Salad" → "दाल तड़का, चावल"
-       - "Vegetable Biryani with Raita" → "वेज बिरयानी, रायता"
+    CRITICAL: The JSON structure must use ENGLISH keys (day, breakfast, lunch, dinner) but the VALUES must be in HINDI DEVANAGARI SCRIPT.
     
-    Translate day names to Hindi: Monday → सोमवार, Tuesday → मंगलवार, Wednesday → बुधवार, 
+    FORMATTING RULES:
+    1. Keep meal names SHORT and CONCISE (max 3-4 words in Hindi Devanagari)
+    2. Use authentic Hindi names: "Poha" → "पोहा", "Dal Tadka" → "दाल तड़का"
+    3. Drop extras like "with..." - keep only main dish names
+    4. Example JSON output format:
+       {
+         "days": [
+           { "day": "सोमवार", "breakfast": "पोहा", "lunch": "दाल चावल", "dinner": "रोटी सब्जी" }
+         ]
+       }
+    
+    Day translations: Monday → सोमवार, Tuesday → मंगलवार, Wednesday → बुधवार, 
     Thursday → गुरुवार, Friday → शुक्रवार, Saturday → शनिवार, Sunday → रविवार
     
-    Meal Plan:
+    Meal Plan to translate:
     ${JSON.stringify(plan.days)}
     
-    Return the translated meal plan with SHORT, READABLE Hindi meal names that fit in a menu card.
+    Return JSON with SHORT Hindi Devanagari meal names that fit in a menu card.
     `;
 
     const response = await ai.models.generateContent({
@@ -804,17 +808,22 @@ export const translateGroceryListToHindi = async (
     };
 
     const prompt = `
-    Translate this grocery list to Hindi. Use common Hindi names for items.
-    For example: "Tomatoes" → "टमाटर", "Onions" → "प्याज", "Rice" → "चावल"
+    Translate this grocery list to Hindi (Devanagari script) for display.
     
-    Also translate categories: Vegetables → सब्जियां, Fruits → फल, Dairy → डेयरी, Proteins → प्रोटीन, Grains → अनाज, Spices → मसाले, Others → अन्य
+    CRITICAL: Use ENGLISH keys (item, quantity, category, checked) but VALUES in HINDI DEVANAGARI SCRIPT.
     
-    Translate quantities too: "500g" → "500 ग्राम", "1 kg" → "1 किलो", "2 pieces" → "2 टुकड़े"
+    Translations:
+    - Items: "Tomatoes" → "टमाटर", "Onions" → "प्याज", "Rice" → "चावल"
+    - Categories: Vegetables → सब्जियां, Fruits → फल, Dairy → डेयरी, Proteins → प्रोटीन, Grains → अनाज, Spices → मसाले, Others → अन्य
+    - Quantities: "500g" → "500 ग्राम", "1 kg" → "1 किलो", "2 pieces" → "2 टुकड़े"
     
-    Grocery List:
+    Example output:
+    [{ "item": "टमाटर", "quantity": "500 ग्राम", "category": "सब्जियां", "checked": false }]
+    
+    Grocery List to translate:
     ${JSON.stringify(items)}
     
-    Return the translated list maintaining the exact structure.
+    Return JSON array with Hindi Devanagari values.
     `;
 
     const response = await ai.models.generateContent({
