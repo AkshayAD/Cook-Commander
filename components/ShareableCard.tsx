@@ -69,9 +69,11 @@ const ShareableCard: React.FC<ShareableCardProps> = ({
             {/* Header */}
             <div className="flex items-center justify-between mb-4 sm:mb-6 border-b border-orange-200 pb-3 sm:pb-4">
                 <div className="flex items-center gap-2 sm:gap-3">
-                    <div className="bg-orange-500 p-1.5 sm:p-2 rounded-lg text-white">
-                        <ChefHat size={forCapture ? 24 : 20} className="sm:w-6 sm:h-6" />
-                    </div>
+                    <img
+                        src="/Site header logo.png"
+                        alt="Q"
+                        className={forCapture ? "w-10 h-10 object-contain" : "w-8 h-8 sm:w-10 sm:h-10 object-contain"}
+                    />
                     <div>
                         <h1 className={headerTitleClasses}>{t.brandName}</h1>
                         <p className="text-[10px] sm:text-xs text-orange-600 font-medium tracking-wide uppercase">

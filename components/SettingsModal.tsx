@@ -90,7 +90,7 @@ export default function SettingsModal({ onClose, canClose }: SettingsModalProps)
                     <div className="space-y-4">
                         <h4 className="font-medium text-gray-800 flex items-center gap-2">
                             <Phone className="w-4 h-4 text-green-600" />
-                            Cook's Contact (for WhatsApp)
+                            Cook's Name (for WhatsApp)
                         </h4>
 
                         <div className="space-y-2">
@@ -102,19 +102,8 @@ export default function SettingsModal({ onClose, canClose }: SettingsModalProps)
                                 placeholder="e.g. Didi"
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all"
                             />
-                        </div>
-
-                        <div className="space-y-2">
-                            <label className="text-xs font-medium text-gray-500 uppercase">WhatsApp Number</label>
-                            <input
-                                type="text"
-                                value={localCookNumber}
-                                onChange={(e) => setLocalCookNumber(e.target.value)}
-                                placeholder="e.g. 919876543210 (with country code)"
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all"
-                            />
                             <p className="text-xs text-gray-400">
-                                Enter number with country code (no +). Example: 919988776655
+                                This name will appear in the greeting when sharing via WhatsApp.
                             </p>
                         </div>
                     </div>

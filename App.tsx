@@ -526,13 +526,11 @@ function App() {
             className="flex items-center gap-2 hover:opacity-80 transition-opacity"
             title="Go to Home"
           >
-            <div className="bg-orange-500 p-2 rounded-lg relative">
-              <ChefHat className="text-white w-6 h-6" />
-              {user && (
-                <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-white" title="Logged In"></span>
-              )}
-            </div>
-            <h1 className="text-xl font-bold text-gray-800 tracking-tight hidden sm:block">QookCommander</h1>
+            <img
+              src={`${import.meta.env.BASE_URL}QookCommander-home-cook-management-app-logo.png`}
+              alt="QookCommander"
+              className="h-10 w-auto"
+            />
           </a>
 
           {/* Right: Actions */}

@@ -739,15 +739,24 @@ export const translateMealPlanToHindi = async (
     };
 
     const prompt = `
-    Translate this meal plan to Hindi. Keep the meal names authentic - use Hindi names for Indian dishes.
-    For example: "Poha" → "पोहा", "Dal Tadka" → "दाल तड़का", "Roti with Sabzi" → "रोटी और सब्जी"
+    Translate this meal plan to Hindi for display on a shareable menu card.
     
-    Translate day names to Hindi as well (Monday → सोमवार, etc.)
+    IMPORTANT FORMATTING RULES:
+    1. Keep meal names SHORT and CONCISE (max 3-4 words in Hindi)
+    2. Use authentic Hindi names for Indian dishes: "Poha" → "पोहा", "Dal Tadka" → "दाल तड़का"
+    3. For longer descriptions, use ONLY the main dish name, drop extras like "with..." or "served with..."
+    4. Example transformations:
+       - "Paratha with Curd and Pickle" → "पराठा, दही, अचार"
+       - "Dal Tadka with Rice and Salad" → "दाल तड़का, चावल"
+       - "Vegetable Biryani with Raita" → "वेज बिरयानी, रायता"
+    
+    Translate day names to Hindi: Monday → सोमवार, Tuesday → मंगलवार, Wednesday → बुधवार, 
+    Thursday → गुरुवार, Friday → शुक्रवार, Saturday → शनिवार, Sunday → रविवार
     
     Meal Plan:
     ${JSON.stringify(plan.days)}
     
-    Return the translated meal plan maintaining the exact structure.
+    Return the translated meal plan with SHORT, READABLE Hindi meal names that fit in a menu card.
     `;
 
     const response = await ai.models.generateContent({

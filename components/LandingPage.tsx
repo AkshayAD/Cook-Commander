@@ -228,19 +228,29 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSkipAuth }) => {
                         <div className="grid md:grid-cols-2 gap-8 mb-24">
                             {/* Grocery & Share */}
                             <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-lg hover:shadow-xl transition-shadow flex flex-col">
-                                <div className="mb-8">
+                                <div className="mb-6">
                                     <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-6 text-2xl font-bold text-green-600">3</div>
                                     <h3 className="text-2xl font-bold text-gray-900 mb-3">Shop & Share in Seconds</h3>
                                     <p className="text-gray-600">
                                         Get an organized shopping list instantly. Share it with family or your cook with a single click.
                                     </p>
                                 </div>
-                                <div className="relative flex-grow flex items-end justify-center min-h-[300px] overflow-hidden rounded-2xl bg-gray-50 pt-8">
-                                    {/* Desktop List */}
-                                    <img src={`${import.meta.env.BASE_URL}qook-app-grocery-shopping-list.png`} className="w-[80%] rounded-t-xl shadow-lg border border-gray-200 transform translate-y-2" alt="Grocery List" />
-                                    {/* Share Card Overlay */}
-                                    <div className="absolute bottom-8 right-4 w-1/2 transform rotate-6 shadow-2xl rounded-lg overflow-hidden border border-gray-200">
-                                        <img src={`${import.meta.env.BASE_URL}qook-app-share-plan-card.png`} className="w-full" alt="Share Card" />
+                                <div className="relative flex-grow flex items-center justify-center min-h-[350px] overflow-hidden rounded-2xl bg-gradient-to-b from-gray-50 to-gray-100 p-6">
+                                    {/* Grocery List - Centered */}
+                                    <div className="relative w-full max-w-[320px] mx-auto">
+                                        <img
+                                            src={`${import.meta.env.BASE_URL}qook-app-grocery-shopping-list.png`}
+                                            className="w-full rounded-xl shadow-xl border border-gray-200"
+                                            alt="Grocery List"
+                                        />
+                                        {/* Share Card Overlay - Positioned to overlap */}
+                                        <div className="absolute -bottom-4 -right-8 w-[55%] transform rotate-3 shadow-2xl rounded-lg overflow-hidden border-2 border-white">
+                                            <img
+                                                src={`${import.meta.env.BASE_URL}qook-app-share-plan-card.png`}
+                                                className="w-full"
+                                                alt="Share Card"
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -314,8 +324,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSkipAuth }) => {
                 <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6">
                     <div className="flex flex-col items-center md:items-start gap-4">
                         <div className="flex items-center gap-2">
-                            <img src={`${import.meta.env.BASE_URL}QookCommander-home-cook-management-app-logo.png`} alt="QookCommander Logo" className="w-10 h-10" />
-                            <span className="text-xl font-bold tracking-tight text-gray-900">QookCommander</span>
+                            <img src={`${import.meta.env.BASE_URL}QookCommander-home-cook-management-app-logo.png`} alt="QookCommander" className="h-10 w-auto" />
                         </div>
                         <div className="text-sm text-gray-500 space-y-1 text-center md:text-left">
                             <p>© {new Date().getFullYear()} QookCommander. All rights reserved.</p>
