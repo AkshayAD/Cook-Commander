@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
-import { X, Share2, Download, Copy, Phone, Loader2, Globe } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { X, Share2, Download, Copy, Phone, Loader2, Globe, AlertCircle } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { WeeklyPlan, GroceryItem } from '../types';
 import ShareableCard from './ShareableCard';
+import { translateMealPlanToHindi, translateGroceryListToHindi, AIConfig } from '../services/geminiService';
+import { useSettings } from '../contexts/SettingsContext';
 
 interface ShareModalProps {
     isOpen: boolean;
@@ -14,12 +16,78 @@ interface ShareModalProps {
 
 const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, type, data, dateRange }) => {
     const [loading, setLoading] = useState(false);
+    const [translating, setTranslating] = useState(false);
     const [language, setLanguage] = useState<'en' | 'hi'>('en');
+    const [translatedData, setTranslatedData] = useState<WeeklyPlan | GroceryItem[] | null>(null);
+    const [translationError, setTranslationError] = useState<string | null>(null);
+
+    const { apiKey, modelName } = useSettings();
+    const config: AIConfig = { apiKey, modelName };
 
     const cookName = localStorage.getItem('cook_name');
     const cookNumber = localStorage.getItem('cook_number');
 
+    // Reset translation when modal opens/closes or data changes
+    useEffect(() => {
+        setTranslatedData(null);
+        setLanguage('en');
+        setTranslationError(null);
+    }, [isOpen, data]);
+
+    // Handle language toggle with AI translation
+    const handleLanguageToggle = useCallback(async () => {
+        if (language === 'hi') {
+            // Switch back to English - use original data
+            setLanguage('en');
+            setTranslatedData(null);
+            setTranslationError(null);
+            return;
+        }
+
+        // Check for API key before translating
+        if (!apiKey) {
+            setTranslationError('API key required for Hindi translation. Please add it in Settings.');
+            return;
+        }
+
+        // Switch to Hindi - translate
+        setTranslating(true);
+        setTranslationError(null);
+
+        try {
+            if (type === 'plan') {
+                const planData = data as WeeklyPlan;
+                const translated = await translateMealPlanToHindi(planData, config);
+                setTranslatedData({ days: translated.days });
+            } else {
+                const groceryData = data as GroceryItem[];
+                const itemsForTranslation = groceryData.map(item => ({
+                    item: item.item,
+                    quantity: item.quantity,
+                    category: item.category,
+                    checked: item.checked
+                }));
+                const translated = await translateGroceryListToHindi(itemsForTranslation, config);
+                setTranslatedData(translated.map((t, i) => ({
+                    ...groceryData[i],
+                    item: t.item,
+                    quantity: t.quantity,
+                    category: t.category
+                })));
+            }
+            setLanguage('hi');
+        } catch (error: any) {
+            console.error('Translation failed:', error);
+            setTranslationError(error.message || 'Translation failed. Please try again.');
+        } finally {
+            setTranslating(false);
+        }
+    }, [language, apiKey, type, data, config]);
+
     if (!isOpen) return null;
+
+    // Use translated data if available, otherwise original
+    const displayData = language === 'hi' && translatedData ? translatedData : data;
 
     const generateImage = async (): Promise<Blob | null> => {
         const element = document.getElementById('share-capture-container');
@@ -155,7 +223,7 @@ const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, type, data, da
                 aria-hidden="true"
             >
                 <div id="share-capture-container">
-                    <ShareableCard type={type} data={data} dateRange={dateRange} forCapture={true} language={language} />
+                    <ShareableCard type={type} data={displayData} dateRange={dateRange} forCapture={true} language={language} />
                 </div>
             </div>
 
@@ -166,34 +234,56 @@ const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, type, data, da
             >
                 <div className="bg-white rounded-2xl w-full max-w-lg sm:max-w-2xl shadow-2xl flex flex-col max-h-[90vh] sm:max-h-[90vh]">
 
-                    {/* Header */}
+                    {/* Header with Close Button */}
                     <div className="p-3 sm:p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50 rounded-t-2xl shrink-0">
                         <h3 className="font-bold text-gray-800 flex items-center gap-2 text-sm sm:text-base">
                             <Share2 className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" />
                             Share {type === 'plan' ? 'Meal Plan' : 'Grocery List'}
                         </h3>
-                        
-                        {/* Language Toggle */}
+
+                        {/* Language Toggle + Close Button */}
                         <div className="flex items-center gap-2">
                             <button
-                                onClick={() => setLanguage(language === 'en' ? 'hi' : 'en')}
-                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
-                                    language === 'hi' 
-                                        ? 'bg-orange-100 text-orange-700 border border-orange-200' 
-                                        : 'bg-gray-100 text-gray-600 border border-gray-200'
-                                }`}
+                                onClick={handleLanguageToggle}
+                                disabled={translating}
+                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all ${translating
+                                        ? 'bg-gray-100 text-gray-400 cursor-wait'
+                                        : language === 'hi'
+                                            ? 'bg-orange-100 text-orange-700 border border-orange-200'
+                                            : !apiKey
+                                                ? 'bg-red-50 text-red-500 border border-red-200'
+                                                : 'bg-gray-100 text-gray-600 border border-gray-200 hover:bg-gray-200'
+                                    }`}
+                                title={!apiKey ? 'API key required for Hindi translation' : ''}
                             >
-                                <Globe className="w-3.5 h-3.5" />
-                                {language === 'en' ? 'English' : 'हिंदी'}
+                                {translating ? (
+                                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                ) : !apiKey ? (
+                                    <AlertCircle className="w-3.5 h-3.5" />
+                                ) : (
+                                    <Globe className="w-3.5 h-3.5" />
+                                )}
+                                {translating ? 'Translating...' : language === 'en' ? 'हिंदी में' : 'हिंदी ✓'}
                             </button>
+
+                            {/* Close Button */}
                             <button
                                 onClick={onClose}
                                 className="p-1.5 sm:p-2 hover:bg-gray-200 rounded-full text-gray-500 transition-colors"
+                                title="Close"
                             >
                                 <X className="w-5 h-5 sm:w-6 sm:h-6" />
                             </button>
                         </div>
                     </div>
+
+                    {/* Translation Error */}
+                    {translationError && (
+                        <div className="px-4 py-2 bg-red-50 border-b border-red-100 flex items-center gap-2 text-red-600 text-sm">
+                            <AlertCircle className="w-4 h-4 shrink-0" />
+                            <span>{translationError}</span>
+                        </div>
+                    )}
 
                     {/* Scrollable Content Area */}
                     <div
@@ -201,7 +291,7 @@ const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, type, data, da
                         style={{ WebkitOverflowScrolling: 'touch' }}
                     >
                         <div className="shadow-2xl rounded-sm overflow-visible mx-auto max-w-[500px]">
-                            <ShareableCard type={type} data={data} dateRange={dateRange} forCapture={false} language={language} />
+                            <ShareableCard type={type} data={displayData} dateRange={dateRange} forCapture={false} language={language} />
                         </div>
                     </div>
 
@@ -262,4 +352,3 @@ const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, type, data, da
 };
 
 export default ShareModal;
-

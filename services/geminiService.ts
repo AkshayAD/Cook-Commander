@@ -689,3 +689,140 @@ export const getLearningSuggestions = async (
     throw error;
   }
 };
+
+// Translate content to Hindi using AI
+export interface TranslatedMealPlan {
+  days: {
+    day: string;
+    breakfast: string;
+    lunch: string;
+    dinner: string;
+  }[];
+}
+
+export interface TranslatedGroceryItem {
+  item: string;
+  quantity: string;
+  category: string;
+  checked: boolean;
+}
+
+export const translateMealPlanToHindi = async (
+  plan: { days: { day: string; breakfast: string; lunch: string; dinner: string }[] },
+  config: AIConfig
+): Promise<TranslatedMealPlan> => {
+  if (!config.apiKey) {
+    throw new Error("API Key is missing for translation.");
+  }
+
+  try {
+    const ai = new GoogleGenAI({ apiKey: config.apiKey });
+
+    const schema = {
+      type: Type.OBJECT,
+      properties: {
+        days: {
+          type: Type.ARRAY,
+          items: {
+            type: Type.OBJECT,
+            properties: {
+              day: { type: Type.STRING },
+              breakfast: { type: Type.STRING },
+              lunch: { type: Type.STRING },
+              dinner: { type: Type.STRING },
+            },
+            required: ["day", "breakfast", "lunch", "dinner"],
+          },
+        },
+      },
+      required: ["days"],
+    };
+
+    const prompt = `
+    Translate this meal plan to Hindi. Keep the meal names authentic - use Hindi names for Indian dishes.
+    For example: "Poha" → "पोहा", "Dal Tadka" → "दाल तड़का", "Roti with Sabzi" → "रोटी और सब्जी"
+    
+    Translate day names to Hindi as well (Monday → सोमवार, etc.)
+    
+    Meal Plan:
+    ${JSON.stringify(plan.days)}
+    
+    Return the translated meal plan maintaining the exact structure.
+    `;
+
+    const response = await ai.models.generateContent({
+      model: "gemini-3-flash-preview",
+      contents: prompt,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: schema,
+        temperature: 0.3,
+        thinkingConfig: { thinkingBudget: 512 }
+      }
+    });
+
+    return JSON.parse(response.text || JSON.stringify(plan));
+  } catch (error: any) {
+    console.error("Translation error:", error);
+    // Return original plan if translation fails
+    return plan as TranslatedMealPlan;
+  }
+};
+
+export const translateGroceryListToHindi = async (
+  items: { item: string; quantity: string; category: string; checked: boolean }[],
+  config: AIConfig
+): Promise<TranslatedGroceryItem[]> => {
+  if (!config.apiKey) {
+    throw new Error("API Key is missing for translation.");
+  }
+
+  try {
+    const ai = new GoogleGenAI({ apiKey: config.apiKey });
+
+    const schema = {
+      type: Type.ARRAY,
+      items: {
+        type: Type.OBJECT,
+        properties: {
+          item: { type: Type.STRING },
+          quantity: { type: Type.STRING },
+          category: { type: Type.STRING },
+          checked: { type: Type.BOOLEAN },
+        },
+        required: ["item", "quantity", "category", "checked"],
+      },
+    };
+
+    const prompt = `
+    Translate this grocery list to Hindi. Use common Hindi names for items.
+    For example: "Tomatoes" → "टमाटर", "Onions" → "प्याज", "Rice" → "चावल"
+    
+    Also translate categories: Vegetables → सब्जियां, Fruits → फल, Dairy → डेयरी, Proteins → प्रोटीन, Grains → अनाज, Spices → मसाले, Others → अन्य
+    
+    Translate quantities too: "500g" → "500 ग्राम", "1 kg" → "1 किलो", "2 pieces" → "2 टुकड़े"
+    
+    Grocery List:
+    ${JSON.stringify(items)}
+    
+    Return the translated list maintaining the exact structure.
+    `;
+
+    const response = await ai.models.generateContent({
+      model: "gemini-3-flash-preview",
+      contents: prompt,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: schema,
+        temperature: 0.3,
+        thinkingConfig: { thinkingBudget: 512 }
+      }
+    });
+
+    return JSON.parse(response.text || JSON.stringify(items));
+  } catch (error: any) {
+    console.error("Translation error:", error);
+    // Return original items if translation fails
+    return items;
+  }
+};
