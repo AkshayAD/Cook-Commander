@@ -1,6 +1,6 @@
 /**
  * Supabase Data Service
- * Handles all CRUD operations for Cook Commander with Supabase backend.
+ * Handles all CRUD operations for QookCommander with Supabase backend.
  * Falls back gracefully to localStorage when Supabase is not configured or user is in offline mode.
  */
 
@@ -168,7 +168,7 @@ const scheduledMealRowToDay = (row: ScheduledMealRow): DayPlan => ({
 
 export const getPreferenceProfiles = async (userId: string): Promise<PreferenceProfile[]> => {
     if (isOfflineMode(userId)) {
-        const saved = localStorage.getItem('cookcommander_profiles');
+        const saved = localStorage.getItem('qookcommander_profiles');
         return saved ? JSON.parse(saved) : [];
     }
 
@@ -192,7 +192,7 @@ export const savePreferenceProfile = async (
 ): Promise<PreferenceProfile> => {
     if (isOfflineMode(userId)) {
         // Fallback to localStorage
-        const saved = localStorage.getItem('cookcommander_profiles');
+        const saved = localStorage.getItem('qookcommander_profiles');
         const profiles: PreferenceProfile[] = saved ? JSON.parse(saved) : [];
         const existingIdx = profiles.findIndex(p => p.id === profile.id);
 
@@ -202,7 +202,7 @@ export const savePreferenceProfile = async (
             profiles.push(profile);
         }
 
-        localStorage.setItem('cookcommander_profiles', JSON.stringify(profiles));
+        localStorage.setItem('qookcommander_profiles', JSON.stringify(profiles));
         return profile;
     }
 
@@ -224,10 +224,10 @@ export const savePreferenceProfile = async (
 
 export const deletePreferenceProfile = async (profileId: string, userId: string = 'local'): Promise<void> => {
     if (isOfflineMode(userId)) {
-        const saved = localStorage.getItem('cookcommander_profiles');
+        const saved = localStorage.getItem('qookcommander_profiles');
         const profiles: PreferenceProfile[] = saved ? JSON.parse(saved) : [];
         const filtered = profiles.filter(p => p.id !== profileId);
-        localStorage.setItem('cookcommander_profiles', JSON.stringify(filtered));
+        localStorage.setItem('qookcommander_profiles', JSON.stringify(filtered));
         return;
     }
 
@@ -248,7 +248,7 @@ export const deletePreferenceProfile = async (profileId: string, userId: string 
 
 export const getCurrentPlan = async (userId: string): Promise<WeeklyPlan | null> => {
     if (isOfflineMode(userId)) {
-        const saved = localStorage.getItem('cookcommander_plan');
+        const saved = localStorage.getItem('qookcommander_plan');
         return saved ? JSON.parse(saved) : null;
     }
 
@@ -277,7 +277,7 @@ export const savePlan = async (
     profileId?: string
 ): Promise<string> => {
     if (isOfflineMode(userId)) {
-        localStorage.setItem('cookcommander_plan', JSON.stringify(plan));
+        localStorage.setItem('qookcommander_plan', JSON.stringify(plan));
         return 'local';
     }
 
@@ -308,7 +308,7 @@ export const savePlan = async (
 
 export const clearCurrentPlan = async (userId: string): Promise<void> => {
     if (isOfflineMode(userId)) {
-        localStorage.removeItem('cookcommander_plan');
+        localStorage.removeItem('qookcommander_plan');
         return;
     }
 
@@ -329,7 +329,7 @@ export const getSchedule = async (
     endDate?: string
 ): Promise<Schedule> => {
     if (isOfflineMode(userId)) {
-        const saved = localStorage.getItem('cookcommander_schedule');
+        const saved = localStorage.getItem('qookcommander_schedule');
         return saved ? JSON.parse(saved) : {};
     }
 
@@ -366,10 +366,10 @@ export const saveScheduledMeal = async (
     userId: string
 ): Promise<void> => {
     if (isOfflineMode(userId)) {
-        const saved = localStorage.getItem('cookcommander_schedule');
+        const saved = localStorage.getItem('qookcommander_schedule');
         const schedule: Schedule = saved ? JSON.parse(saved) : {};
         schedule[date] = dayPlan;
-        localStorage.setItem('cookcommander_schedule', JSON.stringify(schedule));
+        localStorage.setItem('qookcommander_schedule', JSON.stringify(schedule));
         return;
     }
 
@@ -395,7 +395,7 @@ export const archivePlanToSchedule = async (
     userId: string
 ): Promise<void> => {
     if (isOfflineMode(userId)) {
-        const saved = localStorage.getItem('cookcommander_schedule');
+        const saved = localStorage.getItem('qookcommander_schedule');
         const schedule: Schedule = saved ? JSON.parse(saved) : {};
 
         plan.days.forEach((day, idx) => {
@@ -403,8 +403,8 @@ export const archivePlanToSchedule = async (
             schedule[date] = { ...day, day: date };
         });
 
-        localStorage.setItem('cookcommander_schedule', JSON.stringify(schedule));
-        localStorage.removeItem('cookcommander_plan');
+        localStorage.setItem('qookcommander_schedule', JSON.stringify(schedule));
+        localStorage.removeItem('qookcommander_plan');
         return;
     }
 
@@ -477,7 +477,7 @@ export const getMealHistory = async (
 ): Promise<MealHistoryEntry[]> => {
     if (isOfflineMode(userId)) {
         // Derive from schedule in offline mode
-        const saved = localStorage.getItem('cookcommander_schedule');
+        const saved = localStorage.getItem('qookcommander_schedule');
         const schedule: Schedule = saved ? JSON.parse(saved) : {};
 
         const history: MealHistoryEntry[] = [];
@@ -604,7 +604,7 @@ export const getMealLearningSummary = async (
 
     if (isOfflineMode(userId)) {
         // For local mode, use localStorage schedule
-        const saved = localStorage.getItem('cookcommander_schedule');
+        const saved = localStorage.getItem('qookcommander_schedule');
         if (!saved) return emptySummary;
 
         const schedule: Schedule = JSON.parse(saved);
@@ -698,7 +698,7 @@ export const getMealLearningSummary = async (
 // GROCERY LIST HISTORY
 // ============================================================================
 
-const GROCERY_HISTORY_KEY = 'cookcommander_grocery_history';
+const GROCERY_HISTORY_KEY = 'qookcommander_grocery_history';
 
 export const saveGroceryListToHistory = async (
     items: GroceryItem[],

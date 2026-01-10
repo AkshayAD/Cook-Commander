@@ -1,4 +1,4 @@
--- Cook Commander Database Schema
+-- QookCommander Database Schema
 -- Run this in your Supabase SQL Editor (Dashboard > SQL Editor)
 
 -- Enable UUID extension

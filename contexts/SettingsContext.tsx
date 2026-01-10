@@ -16,7 +16,7 @@ interface SettingsContextType {
 
 // Default model - Gemini 3 Flash Preview with thinking capabilities
 const DEFAULT_MODEL = 'gemini-3-flash-preview';
-const API_KEY_STORAGE = 'cookcommander_gemini_api_key';
+const API_KEY_STORAGE = 'qookcommander_gemini_api_key';
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
 
